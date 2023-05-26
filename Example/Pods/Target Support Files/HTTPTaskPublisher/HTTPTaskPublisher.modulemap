@@ -1,0 +1,6 @@
+framework module HTTPTaskPublisher {
+  umbrella header "HTTPTaskPublisher-umbrella.h"
+
+  export *
+  module * { export * }
+}

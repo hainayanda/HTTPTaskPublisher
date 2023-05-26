@@ -1,0 +1,27 @@
+PODS:
+  - HTTPTaskPublisher (0.1.0)
+  - Nimble (10.0.0)
+  - Quick (2.2.1)
+
+DEPENDENCIES:
+  - HTTPTaskPublisher (from `../`)
+  - Nimble (~> 10.0.0)
+  - Quick (~> 2.2.0)
+
+SPEC REPOS:
+  trunk:
+    - Nimble
+    - Quick
+
+EXTERNAL SOURCES:
+  HTTPTaskPublisher:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  HTTPTaskPublisher: ca1753b95c005062893a22d320e0f14d6ae96721
+  Nimble: 5316ef81a170ce87baf72dd961f22f89a602ff84
+  Quick: f5754d69b7013f5864c29aab9ae6f0c79c5bc200
+
+PODFILE CHECKSUM: eba2de55cafd50789a6aaf0c31942775e0f52ac2
+
+COCOAPODS: 1.12.1

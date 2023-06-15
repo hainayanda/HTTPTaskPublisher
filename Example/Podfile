@@ -1,6 +1,6 @@
 use_frameworks!
 
-platform :ios, '10.0'
+platform :ios, '13.0'
 
 target 'HTTPTaskPublisher_Example' do
   pod 'HTTPTaskPublisher', :path => '../'
@@ -8,7 +8,7 @@ target 'HTTPTaskPublisher_Example' do
   target 'HTTPTaskPublisher_Tests' do
     inherit! :search_paths
 
-    pod 'Quick', '~> 2.2.0'
-    pod 'Nimble', '~> 10.0.0'
+    pod 'Quick', '~> 7.0.0'
+    pod 'Nimble', '~> 12.0.0'
   end
 end

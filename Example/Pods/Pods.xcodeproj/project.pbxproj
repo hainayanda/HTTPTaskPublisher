@@ -57,6 +57,7 @@
 		3A20D4EE2A3B32C5009412DD /* HTTPAdapt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A20D4EC2A3B32A1009412DD /* HTTPAdapt.swift */; };
 		3A20D4EF2A3B32E6009412DD /* HTTPDataTaskAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A20D4EA2A3B3064009412DD /* HTTPDataTaskAdapter.swift */; };
 		3A20D4F22A3B33CA009412DD /* HTTPClosureAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A20D4F02A3B33AA009412DD /* HTTPClosureAdapter.swift */; };
+		3A20D4F62A3B4454009412DD /* HTTPDataTaskInterceptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A20D4F42A3B4440009412DD /* HTTPDataTaskInterceptor.swift */; };
 		3AC04F822A21B7EE00B5AE91 /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AC04F812A21B7EE00B5AE91 /* String+Extensions.swift */; };
 		3D91096FC812D66378F048B84449CEF6 /* QCKConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5524CA56A6EE15C7F004E0F2F06BDD6 /* QCKConfiguration.swift */; };
 		409B4C7D68CC372C3F0167BA0BE36D7D /* Pods-HTTPTaskPublisher_Tests-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 012A7E095D1C1CC49BD7326C816BFCEA /* Pods-HTTPTaskPublisher_Tests-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -269,6 +270,7 @@
 		3A20D4EA2A3B3064009412DD /* HTTPDataTaskAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPDataTaskAdapter.swift; sourceTree = "<group>"; };
 		3A20D4EC2A3B32A1009412DD /* HTTPAdapt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPAdapt.swift; sourceTree = "<group>"; };
 		3A20D4F02A3B33AA009412DD /* HTTPClosureAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPClosureAdapter.swift; sourceTree = "<group>"; };
+		3A20D4F42A3B4440009412DD /* HTTPDataTaskInterceptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPDataTaskInterceptor.swift; sourceTree = "<group>"; };
 		3AC04F812A21B7EE00B5AE91 /* String+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
 		3C4851A1D05077F6A583E64ABC030850 /* ToSucceed.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ToSucceed.swift; path = Sources/Nimble/Matchers/ToSucceed.swift; sourceTree = "<group>"; };
 		3C565F073DAE6EA84DD829FE9ED6B98B /* Pods-HTTPTaskPublisher_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-HTTPTaskPublisher_Tests.release.xcconfig"; sourceTree = "<group>"; };
@@ -596,6 +598,7 @@
 		3A16A83C2A20499C008F0D42 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				3A20D4F32A3B442C009412DD /* Interceptor */,
 				3A20D4E82A3B2FB8009412DD /* Adapter */,
 				3A16A85C2A20B5BC008F0D42 /* Extensions */,
 				3A16A85B2A20B5A5008F0D42 /* Base */,
@@ -655,6 +658,14 @@
 				3A20D4F02A3B33AA009412DD /* HTTPClosureAdapter.swift */,
 			);
 			path = Adapter;
+			sourceTree = "<group>";
+		};
+		3A20D4F32A3B442C009412DD /* Interceptor */ = {
+			isa = PBXGroup;
+			children = (
+				3A20D4F42A3B4440009412DD /* HTTPDataTaskInterceptor.swift */,
+			);
+			path = Interceptor;
 			sourceTree = "<group>";
 		};
 		51A71990BE2747CC3F4E70E4164742C1 /* Support Files */ = {
@@ -1228,6 +1239,7 @@
 				3A16A84B2A20A5F6008F0D42 /* URLSession+Extensions.swift in Sources */,
 				3A16A85A2A20B25B008F0D42 /* HTTPRetry.swift in Sources */,
 				3A16A85E2A20DF22008F0D42 /* Publisher+Extensions.swift in Sources */,
+				3A20D4F62A3B4454009412DD /* HTTPDataTaskInterceptor.swift in Sources */,
 				3A16A8582A20B100008F0D42 /* HTTPDataTaskRetrier.swift in Sources */,
 				3A05471C2A21A2A900CA37D5 /* HTTPClosureRetrier.swift in Sources */,
 				3A16A8512A20AC4F008F0D42 /* HTTPDataTaskSubscription.swift in Sources */,

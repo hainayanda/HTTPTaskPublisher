@@ -49,7 +49,7 @@ extension URLSession {
                     return try await send()
                 case .dropWithReason(let reason):
                     isDropping = true
-                    throw HTTPURLError.failToAdapt(
+                    throw HTTPURLError.failToRetry(
                         reason: reason,
                         request: urlRequest,
                         orignalError: originalError.asHTTPURLError()
@@ -72,12 +72,12 @@ extension URLSession {
     }
 }
 
-// MARK: HTTPDataTaskPublisher + Extensions
+// MARK: URLRequestSender + Extensions
 
 extension URLRequestSender where Response == URLSession.HTTPDataTaskPublisher.Response {
     
-    public func adapt(using adaptor: HTTPDataTaskRetrier) -> URLSession.HTTPRetry<Self> {
-        URLSession.HTTPRetry(sender: self, retrier: adaptor)
+    public func retrying(using retrier: HTTPDataTaskRetrier) -> URLSession.HTTPRetry<Self> {
+        URLSession.HTTPRetry(sender: self, retrier: retrier)
     }
 }
 

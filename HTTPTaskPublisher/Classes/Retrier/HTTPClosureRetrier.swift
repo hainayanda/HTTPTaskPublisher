@@ -27,7 +27,7 @@ struct HTTPClosureRetrier: HTTPDataTaskRetrier {
 extension URLRequestSender where Response == URLSession.HTTPDataTaskPublisher.Response {
     
     public func retryDecision(for retrier: @escaping (HTTPURLError, URLRequest) async throws -> HTTPDataTaskRetryDecision) -> URLSession.HTTPRetry<Self> {
-        adapt(using: HTTPClosureRetrier(retrier))
+        retrying(using: HTTPClosureRetrier(retrier))
     }
     
 }

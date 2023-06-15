@@ -9,9 +9,9 @@ import Foundation
 import Combine
 
 public indirect enum HTTPURLError: Error {
-    case failProduceFormData(reason: String)
     case failWhileRetry(error: Error, request: URLRequest, orignalError: HTTPURLError)
-    case failToAdapt(reason: String, request: URLRequest, orignalError: HTTPURLError)
+    case failToRetry(reason: String, request: URLRequest, orignalError: HTTPURLError)
+    case failWhileAdapt(request: URLRequest, originalError: Error)
     case failDecode(data: Data, response: HTTPURLResponse, decodeError: Error)
     case failValidation(reason: String, data: Data, response: HTTPURLResponse)
     case expectHTTPResponse(data: Data, response: URLResponse)
@@ -24,7 +24,7 @@ extension HTTPURLError {
         switch self {
         case .failWhileRetry(let error, _, let orignalError):
             return error.asHTTPURLError().statusCode ?? orignalError.statusCode
-        case .failToAdapt(_, _, let orignalError):
+        case .failToRetry(_, _, let orignalError):
             return orignalError.statusCode
         case .failValidation(_, _, let response), .failDecode(_, let response, _):
             return response.statusCode

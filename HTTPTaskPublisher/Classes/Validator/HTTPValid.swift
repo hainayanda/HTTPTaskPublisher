@@ -46,7 +46,7 @@ extension URLSession {
     }
 }
 
-// MARK: HTTPDataTaskPublisher + Extensions
+// MARK: URLRequestSender + Extensions
 
 extension URLRequestSender where Response == URLSession.HTTPDataTaskPublisher.Response {
     

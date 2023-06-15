@@ -31,13 +31,20 @@ extension URLSession {
         }
         
         public mutating func send(request: URLRequest) async throws -> Response {
-            let adaptationRequest = try await adapter.httpDataTaskAdapt(for: request)
-            return try await sender.send(request: adaptationRequest)
+            do {
+                let adaptationRequest = try await adapter.httpDataTaskAdapt(for: request)
+                return try await sender.send(request: adaptationRequest)
+            } catch {
+                guard let error = error as? HTTPURLError else {
+                    throw HTTPURLError.failWhileAdapt(request: request, originalError: error)
+                }
+                throw error
+            }
         }
     }
 }
 
-// MARK: HTTPDataTaskPublisher + Extensions
+// MARK: URLRequestSender + Extensions
 
 extension URLRequestSender where Response == URLSession.HTTPDataTaskPublisher.Response {
     

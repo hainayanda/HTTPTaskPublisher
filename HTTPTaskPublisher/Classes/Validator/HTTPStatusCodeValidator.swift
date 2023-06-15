@@ -25,7 +25,7 @@ struct HTTPStatusCodeValidator: HTTPDataTaskValidator {
     }
 }
 
-// MARK: HTTPDataRequestable + HTTPStatusCodeValidator
+// MARK: URLRequestSender + HTTPStatusCodeValidator
 
 extension URLRequestSender where Response == URLSession.HTTPDataTaskPublisher.Response {
     

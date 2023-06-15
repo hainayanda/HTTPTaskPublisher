@@ -10,7 +10,7 @@ import Combine
 
 public indirect enum HTTPURLError: Error {
     case failProduceFormData(reason: String)
-    case failWhileAdapt(error: Error, request: URLRequest, orignalError: HTTPURLError)
+    case failWhileRetry(error: Error, request: URLRequest, orignalError: HTTPURLError)
     case failToAdapt(reason: String, request: URLRequest, orignalError: HTTPURLError)
     case failDecode(data: Data, response: HTTPURLResponse, decodeError: Error)
     case failValidation(reason: String, data: Data, response: HTTPURLResponse)
@@ -22,7 +22,7 @@ public indirect enum HTTPURLError: Error {
 extension HTTPURLError {
     public var statusCode: Int? {
         switch self {
-        case .failWhileAdapt(let error, _, let orignalError):
+        case .failWhileRetry(let error, _, let orignalError):
             return error.asHTTPURLError().statusCode ?? orignalError.statusCode
         case .failToAdapt(_, _, let orignalError):
             return orignalError.statusCode

@@ -1,15 +1,15 @@
 //
 //  HTTPClosureAdapter.swift
-//  HTTPTaskPublisher
+//  CombineAsync
 //
-//  Created by Nayanda Haberty on 27/5/23.
+//  Created by Nayanda Haberty on 15/6/23.
 //
 
 import Foundation
 
 struct HTTPClosureAdapter: HTTPDataTaskAdapter {
     
-    typealias AdapterClosure = (HTTPURLError, URLRequest) async throws -> HTTPDataTaskAdaptation
+    typealias AdapterClosure = (URLRequest) async throws -> URLRequest
     
     let adaptClosure: AdapterClosure
     
@@ -17,16 +17,16 @@ struct HTTPClosureAdapter: HTTPDataTaskAdapter {
         self.adaptClosure = adaptClosure
     }
     
-    func httpDataTaskShouldAdapt(for error: HTTPURLError, request: URLRequest) async throws -> HTTPDataTaskAdaptation {
-        try await adaptClosure(error, request)
+    func httpDataTaskAdapt(for request: URLRequest) async throws -> URLRequest {
+        try await self.adaptClosure(request)
     }
 }
 
-// MARK: HTTPDataRequestable + HTTPClosureAdapter
+// MARK: URLRequestSender + HTTPClosureAdapter
 
 extension URLRequestSender where Response == URLSession.HTTPDataTaskPublisher.Response {
     
-    public func adapt(_ adapter: @escaping (HTTPURLError, URLRequest) async throws -> HTTPDataTaskAdaptation) -> URLSession.HTTPAdapt<Self> {
+    public func adapt(for adapter: @escaping (URLRequest) async throws -> URLRequest) -> URLSession.HTTPAdapt<Self> {
         adapt(using: HTTPClosureAdapter(adapter))
     }
     

@@ -1,15 +1,18 @@
 PODS:
-  - HTTPTaskPublisher (0.1.0)
-  - Nimble (10.0.0)
-  - Quick (2.2.1)
+  - CombineAsync (1.0.2)
+  - HTTPTaskPublisher (0.1.0):
+    - CombineAsync (~> 1.0)
+  - Nimble (12.0.0)
+  - Quick (7.0.0)
 
 DEPENDENCIES:
   - HTTPTaskPublisher (from `../`)
-  - Nimble (~> 10.0.0)
-  - Quick (~> 2.2.0)
+  - Nimble (~> 12.0.0)
+  - Quick (~> 7.0.0)
 
 SPEC REPOS:
   trunk:
+    - CombineAsync
     - Nimble
     - Quick
 
@@ -18,10 +21,11 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  HTTPTaskPublisher: ca1753b95c005062893a22d320e0f14d6ae96721
-  Nimble: 5316ef81a170ce87baf72dd961f22f89a602ff84
-  Quick: f5754d69b7013f5864c29aab9ae6f0c79c5bc200
+  CombineAsync: fcfb92a657803e4693b23d328f7f8534a8ae4ab0
+  HTTPTaskPublisher: ac82aa57a7488492c568a7e81809c20a91ded6fe
+  Nimble: 02a4990866e51868303a466970cd1c81bb84a192
+  Quick: f57e9c1acc5ff48d2b04e23a17b4892eda5a3b09
 
-PODFILE CHECKSUM: eba2de55cafd50789a6aaf0c31942775e0f52ac2
+PODFILE CHECKSUM: c85be8a50901a7c8a431afcca14cd76662e7656f
 
 COCOAPODS: 1.12.1

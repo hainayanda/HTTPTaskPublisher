@@ -1,8 +1,8 @@
 {
   "name": "HTTPTaskPublisher",
   "version": "0.1.0",
-  "summary": "A short description of HTTPTaskPublisher.",
-  "description": "TODO: Add long description of the pod here.",
+  "summary": "Swift Publisher for HTTP request",
+  "description": "Swift DataTaskPublisher, DownloadTaskPublisher and UploadTaskPublisher Wrapper for HTTP request",
   "homepage": "https://github.com/hainayanda/HTTPTaskPublisher",
   "license": {
     "type": "MIT",
@@ -16,7 +16,14 @@
     "tag": "0.1.0"
   },
   "platforms": {
-    "ios": "10.0"
+    "ios": "13.0"
   },
-  "source_files": "HTTPTaskPublisher/Classes/**/*"
+  "swift_versions": "5.5",
+  "source_files": "HTTPTaskPublisher/Classes/**/*",
+  "dependencies": {
+    "CombineAsync": [
+      "~> 1.0"
+    ]
+  },
+  "swift_version": "5.5"
 }

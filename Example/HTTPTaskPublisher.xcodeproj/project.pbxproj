@@ -7,12 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3A20D4E72A3B2595009412DD /* IntegrationSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A20D4E62A3B2595009412DD /* IntegrationSpec.swift */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
 		607FACD81AFB9204008FA782 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD71AFB9204008FA782 /* ViewController.swift */; };
 		607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 607FACD91AFB9204008FA782 /* Main.storyboard */; };
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
-		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
 		61533717B86D1C8A08DB82DA /* Pods_HTTPTaskPublisher_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FF77A8C3785B8A2397A033B /* Pods_HTTPTaskPublisher_Tests.framework */; };
 		E4AD667F20B0A90C77A5946B /* Pods_HTTPTaskPublisher_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B64C7B862C80FAEC38594FD /* Pods_HTTPTaskPublisher_Example.framework */; };
 /* End PBXBuildFile section */
@@ -28,8 +28,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		3A20D4E62A3B2595009412DD /* IntegrationSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrationSpec.swift; sourceTree = "<group>"; };
 		44F8700FE3458410612EDCEC /* Pods-HTTPTaskPublisher_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HTTPTaskPublisher_Example.release.xcconfig"; path = "Target Support Files/Pods-HTTPTaskPublisher_Example/Pods-HTTPTaskPublisher_Example.release.xcconfig"; sourceTree = "<group>"; };
-		4A4070CF729ADD8FB3BCE79E /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
+		4A4070CF729ADD8FB3BCE79E /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		5D5D94BA706EF14EBD4634F5 /* Pods-HTTPTaskPublisher_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HTTPTaskPublisher_Tests.debug.xcconfig"; path = "Target Support Files/Pods-HTTPTaskPublisher_Tests/Pods-HTTPTaskPublisher_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		607FACD01AFB9204008FA782 /* HTTPTaskPublisher_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HTTPTaskPublisher_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACD41AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -40,13 +41,12 @@
 		607FACDF1AFB9204008FA782 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		607FACE51AFB9204008FA782 /* HTTPTaskPublisher_Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HTTPTaskPublisher_Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACEA1AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		607FACEB1AFB9204008FA782 /* Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests.swift; sourceTree = "<group>"; };
 		66E1D51933B695602A13CD2A /* Pods-HTTPTaskPublisher_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HTTPTaskPublisher_Example.debug.xcconfig"; path = "Target Support Files/Pods-HTTPTaskPublisher_Example/Pods-HTTPTaskPublisher_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		7B64C7B862C80FAEC38594FD /* Pods_HTTPTaskPublisher_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_HTTPTaskPublisher_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7FF77A8C3785B8A2397A033B /* Pods_HTTPTaskPublisher_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_HTTPTaskPublisher_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9DEBEC22131F2D46D3F2165E /* Pods-HTTPTaskPublisher_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HTTPTaskPublisher_Tests.release.xcconfig"; path = "Target Support Files/Pods-HTTPTaskPublisher_Tests/Pods-HTTPTaskPublisher_Tests.release.xcconfig"; sourceTree = "<group>"; };
-		CB817A1CA60B04DC1DF42544 /* HTTPTaskPublisher.podspec */ = {isa = PBXFileReference; includeInIndex = 1; name = HTTPTaskPublisher.podspec; path = ../HTTPTaskPublisher.podspec; sourceTree = "<group>"; };
-		F2F8C3CF5C0A1A604F39A229 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; name = README.md; path = ../README.md; sourceTree = "<group>"; };
+		CB817A1CA60B04DC1DF42544 /* HTTPTaskPublisher.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = HTTPTaskPublisher.podspec; path = ../HTTPTaskPublisher.podspec; sourceTree = "<group>"; };
+		F2F8C3CF5C0A1A604F39A229 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -115,8 +115,8 @@
 		607FACE81AFB9204008FA782 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				607FACEB1AFB9204008FA782 /* Tests.swift */,
 				607FACE91AFB9204008FA782 /* Supporting Files */,
+				3A20D4E62A3B2595009412DD /* IntegrationSpec.swift */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -147,7 +147,6 @@
 				5D5D94BA706EF14EBD4634F5 /* Pods-HTTPTaskPublisher_Tests.debug.xcconfig */,
 				9DEBEC22131F2D46D3F2165E /* Pods-HTTPTaskPublisher_Tests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -228,6 +227,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -270,10 +270,12 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-HTTPTaskPublisher_Example/Pods-HTTPTaskPublisher_Example-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/CombineAsync/CombineAsync.framework",
 				"${BUILT_PRODUCTS_DIR}/HTTPTaskPublisher/HTTPTaskPublisher.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CombineAsync.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/HTTPTaskPublisher.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -361,7 +363,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				607FACEC1AFB9204008FA782 /* Tests.swift in Sources */,
+				3A20D4E72A3B2595009412DD /* IntegrationSpec.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -500,6 +502,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = HTTPTaskPublisher/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.$(PRODUCT_NAME:rfc1034identifier)";
@@ -515,6 +518,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = HTTPTaskPublisher/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.$(PRODUCT_NAME:rfc1034identifier)";
@@ -537,6 +541,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = Tests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -555,6 +560,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = Tests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";

@@ -30,8 +30,8 @@ HTTPTaskPublisher is available under the MIT license. See the LICENSE file for m
 
 ## Basic Usage
 
-HTTPTaskPublisher does not aim to recreate the `DataTaskPublisher`, but as an extensions of it. In fact HTTPTaskPublisher is using `DataTaskPublisher` behind it. What it did do is, it will do the hard work to ensure your http request is work smoothly.
-To do a http request, it will be similar with how to do with `DataTaskPublisher`:
+HTTPTaskPublisher does not aim to recreate the `DataTaskPublisher`, but as an extension of it. In fact, HTTPTaskPublisher is using `DataTaskPublisher` behind it. What it did do is, it will do the hard work to ensure your HTTP request works smoothly.
+To do an HTTP request, it will be similar to how to do with `DataTaskPublisher`:
 
 ```swift
 var myRequest: URLRequest(url: url)
@@ -84,7 +84,7 @@ then it will generate a tuple like this:
 
 ### Validation
 
-You can add a validation to the request to make it throw error whenever the response is failing the validation:
+You can add a validation to the request to make it throw an error whenever the response is failing the validation:
 
 ```swift
 URLSession.shared.httpTaskPublisher(for: myRequest)
@@ -95,8 +95,8 @@ URLSession.shared.httpTaskPublisher(for: myRequest)
     .sink { ... }
 ```
 
-The closure will be called after the request is succeed and producing `Data` and `HTTPURLResponse`. You can validate the result and return `HTTPDataTaskValidation` as validation result. It will then used to determined that the request should be passed to the subscriber or throwing `HTTPURLError.failValidation(reason:data:response:)`.
-`HTTPDataTaskValidation` is enumeration that declared like this:
+The closure will be called after the request is successful and produces `Data` and `HTTPURLResponse`. You can validate the result and return `HTTPDataTaskValidation` as the validation result. It will then be used to determine that the request should be passed to the subscriber or throw `HTTPURLError.failValidation(reason:data:response:)`.
+`HTTPDataTaskValidation` is an enumeration that is declared like this:
 
 ```swift
 public enum HTTPDataTaskValidation: Equatable {
@@ -128,7 +128,7 @@ URLSession.shared.httpTaskPublisher(for: myRequest)
     .sink { ... }
 ```
 
-In any case you need more complex validation, just implement `HTTPDataTaskValidator`:
+In case you need more complex validation, just implement `HTTPDataTaskValidator`:
 
 ```swift
 struct MyValidator: HTTPDataTaskValidator { 
@@ -160,8 +160,8 @@ URLSession.shared.httpTaskPublisher(for: myRequest)
     .sink { ... }
 ```
 
-The closure will be called when the request is failing and producing `HTTPURLError`. You can decide based on this and return `HTTPDataTaskRetryDecision` as retry decision result. It will then used to determined that the request should be retried or not.
-`HTTPDataTaskRetryDecision` is enumeration that declared like this:
+The closure will be called when the request is failing and producing `HTTPURLError`. You can decide based on this and return `HTTPDataTaskRetryDecision` as the retry decision result. It will then be used to determine whether the request should be retried or not.
+`HTTPDataTaskRetryDecision` is an enumeration that is declared like this:
 
 ```swift
 public enum HTTPDataTaskRetryDecision: Equatable {
@@ -172,7 +172,7 @@ public enum HTTPDataTaskRetryDecision: Equatable {
 }
 ```
 
-If you want to do more complex retry then you can implement `HTTPDataTaskRetrier`:
+If you want to do a more complex retry then you can implement `HTTPDataTaskRetrier`:
 
 ```swift
 struct MyRetrier: HTTPDataTaskRetrier {
@@ -202,7 +202,7 @@ URLSession.shared.httpTaskPublisher(for: myRequest)
 
 ### Adapt
 
-You can adapt your request before sending like this:
+You can adapt your request before sending it like this:
 
 ```swift
 URLSession.shared.httpTaskPublisher(for: myRequest)
@@ -213,8 +213,8 @@ URLSession.shared.httpTaskPublisher(for: myRequest)
     .sink { ... }
 ```
 
-The closure will be called right before it sent. It will then use the new request provided by the adaptation or throwing an `HTTPURLErrorfailWhileAdapt(request:originalError:)` even before the request been made.
-If you want to do more complex adaptation then you can implement `HTTPDataTaskAdapter`:
+The closure will be called right before it is sent. It will then use the new request provided by the adaptation or throw an `HTTPURLErrorfailWhileAdapt(request:originalError:)` even before the request has been made.
+If you want to do a more complex adaptation then you can implement `HTTPDataTaskAdapter`:
 
 ```swift
 struct MyAdapter: HTTPDataTaskAdapter {
@@ -241,7 +241,7 @@ URLSession.shared.httpTaskPublisher(for: myRequest)
 
 ### Interceptor
 
-Sometimes you will need both retrier and adapter like when you are using refresh token mechanism. We can create one instance that implement `HTTPDataTaskInterceptor` that actually just a typealias of `HTTPDataTaskAdapter` and `HTTPDataTaskRetrier`:
+Sometimes you will need both a retrier and adapter like when you are using a refresh token mechanism. We can create one instance that implements `HTTPDataTaskInterceptor` that is actually just a typealias of `HTTPDataTaskAdapter` and `HTTPDataTaskRetrier`:
 
 ```swift
 struct MyInterceptor: HTTPDataTaskInterceptor {
@@ -275,7 +275,7 @@ URLSession.shared.httpTaskPublisher(for: myRequest)
 
 ### Combine
 
-Since HTTPTaskPublisher is created using Combine framework, you can do anything that allowed by Combine like this:
+Since HTTPTaskPublisher is created using the Combine framework, you can do anything that is allowed by Combine like this:
 
 ```swift
 URLSession.shared.httpTaskPublisher(for: myRequest)

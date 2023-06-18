@@ -19,7 +19,6 @@ Pod::Spec.new do |s|
 
   s.description      = <<-DESC
   HTTPTaskPublisher does not aim to recreate the `DataTaskPublisher`, but as an extension of it. In fact, HTTPTaskPublisher is using `DataTaskPublisher` behind it. What it did do is, it will do the hard work to ensure your HTTP request works smoothly.
-    To do an HTTP request, it will be similar to how to do with `DataTaskPublisher`
                        DESC
 
   s.homepage         = 'https://github.com/hainayanda/HTTPTaskPublisher'

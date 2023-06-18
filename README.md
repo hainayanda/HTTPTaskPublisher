@@ -1,5 +1,8 @@
 # HTTPTaskPublisher
 
+HTTPTaskPublisher does not aim to recreate the `DataTaskPublisher`, but as an extension of it. In fact, HTTPTaskPublisher is using `DataTaskPublisher` behind it. What it did do is, it will do the hard work to ensure your HTTP request works smoothly.
+
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/b10d43146b114ad4a98882ba9e8f96be)](https://app.codacy.com/gh/hainayanda/HTTPTaskPublisher/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 ![build](https://github.com/hainayanda/HTTPTaskPublisher/workflows/build/badge.svg)
 ![test](https://github.com/hainayanda/HTTPTaskPublisher/workflows/test/badge.svg)
 [![Version](https://img.shields.io/cocoapods/v/HTTPTaskPublisher.svg?style=flat)](https://cocoapods.org/pods/HTTPTaskPublisher)
@@ -63,7 +66,6 @@ HTTPTaskPublisher is available under the MIT license. See the LICENSE file for m
 
 ## Basic Usage
 
-HTTPTaskPublisher does not aim to recreate the `DataTaskPublisher`, but as an extension of it. In fact, HTTPTaskPublisher is using `DataTaskPublisher` behind it. What it did do is, it will do the hard work to ensure your HTTP request works smoothly.
 To do an HTTP request, it will be similar to how to do with `DataTaskPublisher`:
 
 ```swift

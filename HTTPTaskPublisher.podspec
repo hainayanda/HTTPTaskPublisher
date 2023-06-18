@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'HTTPTaskPublisher'
-  s.version          = '0.1.0'
+  s.version          = '1.0.0'
   s.summary          = 'Swift Publisher for HTTP request'
 
 # This description is used to generate tags and improve search results.
@@ -18,7 +18,8 @@ Pod::Spec.new do |s|
 #   * Finally, don't worry about the indent, CocoaPods strips it!
 
   s.description      = <<-DESC
-  Swift DataTaskPublisher, DownloadTaskPublisher and UploadTaskPublisher Wrapper for HTTP request
+  HTTPTaskPublisher does not aim to recreate the `DataTaskPublisher`, but as an extension of it. In fact, HTTPTaskPublisher is using `DataTaskPublisher` behind it. What it did do is, it will do the hard work to ensure your HTTP request works smoothly.
+    To do an HTTP request, it will be similar to how to do with `DataTaskPublisher`
                        DESC
 
   s.homepage         = 'https://github.com/hainayanda/HTTPTaskPublisher'
@@ -29,6 +30,8 @@ Pod::Spec.new do |s|
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
   s.ios.deployment_target = '13.0'
+  s.osx.deployment_target = "10.15"
+  s.tvos.deployment_target = '13.0'
   s.swift_versions = '5.5'
 
   s.source_files = 'HTTPTaskPublisher/Classes/**/*'

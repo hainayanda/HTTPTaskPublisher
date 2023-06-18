@@ -84,9 +84,7 @@ private struct Entry: Codable {
 }
 
 private enum Cors: String, Codable {
-    case yes = "yes"
-    case no = "no"
-    case unknown = "unknown"
+    case yes
+    case no
+    case unknown
 }
-
-

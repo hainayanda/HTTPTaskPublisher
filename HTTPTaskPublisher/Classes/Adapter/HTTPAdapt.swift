@@ -25,7 +25,7 @@ extension URLSession {
             self.adapter = adapter
         }
         
-        public func receive<S>(subscriber: S) where S : Subscriber, HTTPURLError == S.Failure, Response == S.Input {
+        public func receive<S>(subscriber: S) where S: Subscriber, HTTPURLError == S.Failure, Response == S.Input {
             let subscription = HTTPDataTaskSubscription(sender: self, subscriber: subscriber)
             subscriber.receive(subscription: subscription)
         }

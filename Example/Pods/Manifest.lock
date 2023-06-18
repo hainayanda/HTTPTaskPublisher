@@ -1,6 +1,6 @@
 PODS:
   - CombineAsync (1.0.2)
-  - HTTPTaskPublisher (0.1.0):
+  - HTTPTaskPublisher (1.0.0):
     - CombineAsync (~> 1.0)
   - Nimble (12.0.0)
   - Quick (7.0.0)
@@ -22,7 +22,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   CombineAsync: fcfb92a657803e4693b23d328f7f8534a8ae4ab0
-  HTTPTaskPublisher: ac82aa57a7488492c568a7e81809c20a91ded6fe
+  HTTPTaskPublisher: 3b59c5a223b046b9586d39880a7708166e498585
   Nimble: 02a4990866e51868303a466970cd1c81bb84a192
   Quick: f57e9c1acc5ff48d2b04e23a17b4892eda5a3b09
 

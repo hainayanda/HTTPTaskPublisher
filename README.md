@@ -1,6 +1,7 @@
 # HTTPTaskPublisher
 
-[![CI Status](https://img.shields.io/travis/hainayanda/HTTPTaskPublisher.svg?style=flat)](https://travis-ci.org/hainayanda/HTTPTaskPublisher)
+![build](https://github.com/hainayanda/HTTPTaskPublisher/workflows/build/badge.svg)
+![test](https://github.com/hainayanda/HTTPTaskPublisher/workflows/test/badge.svg)
 [![Version](https://img.shields.io/cocoapods/v/HTTPTaskPublisher.svg?style=flat)](https://cocoapods.org/pods/HTTPTaskPublisher)
 [![License](https://img.shields.io/cocoapods/l/HTTPTaskPublisher.svg?style=flat)](https://cocoapods.org/pods/HTTPTaskPublisher)
 [![Platform](https://img.shields.io/cocoapods/p/HTTPTaskPublisher.svg?style=flat)](https://cocoapods.org/pods/HTTPTaskPublisher)
@@ -11,13 +12,45 @@ To run the example project, clone the repo, and run `pod install` from the Examp
 
 ## Requirements
 
-## Installation
+- Swift 5.5 or higher
+- iOS 13.0 or higher
+- MacOS 10.15 or higher
+- TVOS 13.0 or higer
+- XCode 13 or higher
+
+### Cocoapods
 
 HTTPTaskPublisher is available through [CocoaPods](https://cocoapods.org). To install
 it, simply add the following line to your Podfile:
 
 ```ruby
-pod 'HTTPTaskPublisher'
+pod 'HTTPTaskPublisher', '~> 1.0'
+```
+
+### Swift Package Manager from XCode
+
+- Add it using XCode menu **File > Swift Package > Add Package Dependency**
+- Add **<https://github.com/hainayanda/HTTPTaskPublisher.git>** as Swift Package URL
+- Set rules at **version**, with **Up to Next Major** option and put **1.0.0** as its version
+- Click next and wait
+
+### Swift Package Manager from Package.swift
+
+Add as your target dependency in **Package.swift**
+
+```swift
+dependencies: [
+    .package(url: "https://github.com/hainayanda/HTTPTaskPublisher.git", .upToNextMajor(from: "1.0.0"))
+]
+```
+
+Use it in your target as a `HTTPTaskPublisher`
+
+```swift
+ .target(
+    name: "MyModule",
+    dependencies: ["HTTPTaskPublisher"]
+)
 ```
 
 ## Author

@@ -13,6 +13,7 @@ import Combine
 @testable import HTTPTaskPublisher
 
 class HTTPRetrySpec: QuickSpec {
+    // swiftlint:disable function_body_length
     override class func spec() {
         var sender: URLRequestSenderMock!
         var publisher: URLSession.HTTPRetry<URLRequestSenderMock>!
@@ -99,6 +100,7 @@ class HTTPRetrySpec: QuickSpec {
             }
         }
     }
+    // swiftlint:enable function_body_length
 }
 
 // MARK: Test

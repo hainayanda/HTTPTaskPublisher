@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "CombineAsync",
+        "repositoryURL": "https://github.com/hainayanda/CombineAsync.git",
+        "state": {
+          "branch": null,
+          "revision": "e202b8c6e81e6dbfbdbe4afdd4b361b42657ec4a",
+          "version": "1.0.2"
+        }
+      }
+    ]
+  },
+  "version": 1
+}

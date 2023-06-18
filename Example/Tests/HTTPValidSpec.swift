@@ -140,4 +140,3 @@ private class MockValidator: HTTPDataTaskValidator {
         return validation
     }
 }
-

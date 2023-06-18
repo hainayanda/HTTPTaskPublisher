@@ -25,7 +25,7 @@ extension URLSession {
             self.retrier = retrier
         }
         
-        public func receive<S>(subscriber: S) where S : Subscriber, HTTPURLError == S.Failure, Response == S.Input {
+        public func receive<S>(subscriber: S) where S: Subscriber, HTTPURLError == S.Failure, Response == S.Input {
             let subscription = HTTPDataTaskSubscription(sender: self, subscriber: subscriber)
             subscriber.receive(subscription: subscription)
         }
@@ -80,4 +80,3 @@ extension URLRequestSender where Response == URLSession.HTTPDataTaskPublisher.Re
         URLSession.HTTPRetry(sender: self, retrier: retrier)
     }
 }
-

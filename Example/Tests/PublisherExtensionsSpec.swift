@@ -19,15 +19,15 @@ class PublisherExtensionsSpec: QuickSpec {
             publisher = .init()
         }
         it("should decode the data") {
-            var data = "{\"number\":1,\"string\":\"some string\",\"bool\":true}".data(using: .utf8)!
+            let data = "{\"number\":1,\"string\":\"some string\",\"bool\":true}".data(using: .utf8)!
             let result = try waitToDecode(using: publisher, for: data)
             let expected = ToDecode(number: 1, string: "some string", bool: true)
             expect(result).to(equal(expected))
         }
         it("should fail decode the data") {
-            var data = "{\"notANumber\":\"1\",\"string\":\"some string\",\"bool\":true}".data(using: .utf8)!
+            let data = "{\"notANumber\":\"1\",\"string\":\"some string\",\"bool\":true}".data(using: .utf8)!
             do {
-                let result = try waitToDecode(using: publisher, for: data)
+                _ = try waitToDecode(using: publisher, for: data)
                 fail("this decode should be failing")
             } catch {
                 guard let httpError = error as? HTTPURLError,
@@ -54,8 +54,8 @@ private func waitToDecode(using publisher: PassthroughSubject<URLSession.HTTPDat
             switch completion {
             case .finished:
                 break
-            case .failure(let e):
-                error = e
+            case .failure(let err):
+                error = err
             }
             done()
         } receiveValue: { value in

@@ -10,7 +10,7 @@ import Foundation
 extension URLSession {
     
     public func httpTaskPublisher(for urlRequest: URLRequest) -> HTTPDataTaskPublisher {
-        HTTPDataTaskPublisher(session: self, urlRequest: urlRequest)
+        HTTPDataTaskPublisher(dataTaskFactory: self, urlRequest: urlRequest)
     }
     
 }

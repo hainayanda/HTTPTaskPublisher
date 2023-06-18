@@ -28,6 +28,10 @@ extension HTTPURLError {
             return orignalError.statusCode
         case .failValidation(_, _, let response), .failDecode(_, let response, _):
             return response.statusCode
+        case .failWhileAdapt(_, let error):
+            return error.asHTTPURLError().statusCode
+        case .error(let error):
+            return (error as? HTTPURLError)?.statusCode
         default:
             return nil
         }

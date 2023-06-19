@@ -309,19 +309,21 @@ URLSession.shared.httpTaskPublisher(for: myRequest)
     .sink { ... }
 ```
 
-### Combine
+### Combine and CombineAsync
 
-Since HTTPTaskPublisher is created using the Combine framework, you can do anything that is allowed by Combine like this:
+Since HTTPTaskPublisher is created using the [Combine](https://developer.apple.com/documentation/combine) and [CombineAsync](https://github.com/hainayanda/CombineAsync) framework, you can do anything that is allowed by Combine and CombineAsync like this:
 
 ```swift
-URLSession.shared.httpTaskPublisher(for: myRequest)
+import Combine
+import CombineAsync
+
+let payloads = try await URLSession.shared.httpTaskPublisher(for: myRequest)
     .intercept(using: MyInterceptor())
     .decode(type: Result.self, decoder: JSONDecoder())
     .retry(2)
     .map { $0.decoded.payloads }
-    .sink { ... }
+    .sinkAsynchronously()
 ```
-
 ## Contribute
 
 You know how, just clone and do a pull request

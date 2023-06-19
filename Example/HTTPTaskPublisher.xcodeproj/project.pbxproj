@@ -59,7 +59,7 @@
 		7B64C7B862C80FAEC38594FD /* Pods_HTTPTaskPublisher_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_HTTPTaskPublisher_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7FF77A8C3785B8A2397A033B /* Pods_HTTPTaskPublisher_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_HTTPTaskPublisher_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9DEBEC22131F2D46D3F2165E /* Pods-HTTPTaskPublisher_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HTTPTaskPublisher_Tests.release.xcconfig"; path = "Target Support Files/Pods-HTTPTaskPublisher_Tests/Pods-HTTPTaskPublisher_Tests.release.xcconfig"; sourceTree = "<group>"; };
-		CB817A1CA60B04DC1DF42544 /* HTTPTaskPublisher.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = HTTPTaskPublisher.podspec; path = ../HTTPTaskPublisher.podspec; sourceTree = "<group>"; };
+		CB817A1CA60B04DC1DF42544 /* HTTPTaskPublisher.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = HTTPTaskPublisher.podspec; path = ../HTTPTaskPublisher.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		F2F8C3CF5C0A1A604F39A229 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -342,11 +342,13 @@
 				"${PODS_ROOT}/Target Support Files/Pods-HTTPTaskPublisher_Example/Pods-HTTPTaskPublisher_Example-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/CombineAsync/CombineAsync.framework",
 				"${BUILT_PRODUCTS_DIR}/HTTPTaskPublisher/HTTPTaskPublisher.framework",
+				"${BUILT_PRODUCTS_DIR}/Retain/Retain.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CombineAsync.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/HTTPTaskPublisher.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Retain.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;

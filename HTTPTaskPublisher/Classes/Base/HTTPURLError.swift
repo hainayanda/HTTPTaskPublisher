@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import CombineAsync
 
 public indirect enum HTTPURLError: Error {
     case failWhileRetry(error: Error, request: URLRequest, orignalError: HTTPURLError)
@@ -44,6 +45,8 @@ extension Error {
             return httpError
         } else if let urlError = self as? URLError {
             return .urlError(urlError)
+        } else if self is PublisherToAsyncError {
+            return HTTPURLError.urlError(URLError(.timedOut))
         } else {
             return .error(self)
         }

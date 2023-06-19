@@ -6,8 +6,53 @@
         "repositoryURL": "https://github.com/hainayanda/CombineAsync.git",
         "state": {
           "branch": null,
-          "revision": "e202b8c6e81e6dbfbdbe4afdd4b361b42657ec4a",
-          "version": "1.0.2"
+          "revision": "7bbf9cfc1c773523dedcdf145e7eaa7a93edfdac",
+          "version": "1.1.3"
+        }
+      },
+      {
+        "package": "CwlCatchException",
+        "repositoryURL": "https://github.com/mattgallagher/CwlCatchException.git",
+        "state": {
+          "branch": null,
+          "revision": "3b123999de19bf04905bc1dfdb76f817b0f2cc00",
+          "version": "2.1.2"
+        }
+      },
+      {
+        "package": "CwlPreconditionTesting",
+        "repositoryURL": "https://github.com/mattgallagher/CwlPreconditionTesting.git",
+        "state": {
+          "branch": null,
+          "revision": "a23ded2c91df9156628a6996ab4f347526f17b6b",
+          "version": "2.1.2"
+        }
+      },
+      {
+        "package": "Nimble",
+        "repositoryURL": "https://github.com/Quick/Nimble.git",
+        "state": {
+          "branch": null,
+          "revision": "371f7d278ba95a5511c248aaeec84f5dbe770491",
+          "version": "12.0.1"
+        }
+      },
+      {
+        "package": "Quick",
+        "repositoryURL": "https://github.com/Quick/Quick.git",
+        "state": {
+          "branch": null,
+          "revision": "91132c0fe9a98e76f3d7381a608685aa41770706",
+          "version": "7.0.2"
+        }
+      },
+      {
+        "package": "Retain",
+        "repositoryURL": "https://github.com/hainayanda/Retain.git",
+        "state": {
+          "branch": null,
+          "revision": "faadd0f2d903b49ce25a95b8dac00fee2fc2431d",
+          "version": "1.0.1"
         }
       }
     ]

@@ -46,7 +46,7 @@ extension URLSession {
             self.urlRequest = request
             return try await dataTaskFactory.anyDataTaskPublisher(for: request)
                 .httpResponseOnly()
-                .sinkAsynchronously()
+                .sinkAsynchronously(timeout: request.timeoutInterval)
         }
     }
 }

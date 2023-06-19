@@ -2,7 +2,7 @@
   "name": "HTTPTaskPublisher",
   "version": "1.0.0",
   "summary": "Swift Publisher for HTTP request",
-  "description": "HTTPTaskPublisher does not aim to recreate the `DataTaskPublisher`, but as an extension of it. In fact, HTTPTaskPublisher is using `DataTaskPublisher` behind it. What it did do is, it will do the hard work to ensure your HTTP request works smoothly.\n  To do an HTTP request, it will be similar to how to do with `DataTaskPublisher`",
+  "description": "HTTPTaskPublisher does not aim to recreate the `DataTaskPublisher`, but as an extension of it. In fact, HTTPTaskPublisher is using `DataTaskPublisher` behind it. What it did do is, it will do the hard work to ensure your HTTP request works smoothly.",
   "homepage": "https://github.com/hainayanda/HTTPTaskPublisher",
   "license": {
     "type": "MIT",
@@ -18,13 +18,14 @@
   "platforms": {
     "ios": "13.0",
     "osx": "10.15",
-    "tvos": "13.0"
+    "tvos": "13.0",
+    "watchos": "8.0"
   },
   "swift_versions": "5.5",
   "source_files": "HTTPTaskPublisher/Classes/**/*",
   "dependencies": {
     "CombineAsync": [
-      "~> 1.0"
+      "~> 1.1.3"
     ]
   },
   "swift_version": "5.5"

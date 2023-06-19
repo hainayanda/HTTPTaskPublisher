@@ -18,8 +18,9 @@ To run the example project, clone the repo, and run `pod install` from the Examp
 
 - Swift 5.5 or higher
 - iOS 13.0 or higher
-- MacOS 10.15 or higher (SPM Only)
-- TVOS 13.0 or higer (SPM Only)
+- MacOS 10.15 or higher
+- TVOS 13.0 or higher
+- WatchOS 8.0 or higher
 - XCode 13 or higher
 
 ## Installation
@@ -30,14 +31,14 @@ CombineAsync is available through [CocoaPods](https://cocoapods.org). To install
 it, simply add the following line to your Podfile:
 
 ```ruby
-pod 'CombineAsync', '~> 1.0.2'
+pod 'CombineAsync', '~> 1.1.3'
 ```
 
 ### Swift Package Manager from XCode
 
 - Add it using XCode menu **File > Swift Package > Add Package Dependency**
 - Add **<https://github.com/hainayanda/CombineAsync.git>** as Swift Package URL
-- Set rules at **version**, with **Up to Next Major** option and put **1.0.2** as its version
+- Set rules at **version**, with **Up to Next Major** option and put **1.1.3** as its version
 - Click next and wait
 
 ### Swift Package Manager from Package.swift
@@ -46,7 +47,7 @@ Add as your target dependency in **Package.swift**
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/hainayanda/CombineAsync.git", .upToNextMajor(from: "1.0.2"))
+    .package(url: "https://github.com/hainayanda/CombineAsync.git", .upToNextMajor(from: "1.1.3"))
 ]
 ```
 
@@ -58,6 +59,8 @@ Use it in your target as a `CombineAsync`
     dependencies: ["CombineAsync"]
 )
 ```
+
+## Author
 
 hainayanda, hainayanda@outlook.com
 
@@ -74,9 +77,10 @@ CombineAsync is available under the MIT license. See the LICENSE file for more i
 You can convert any object that implements `Publisher` into Swift async with a single call:
 
 ```swift
+// implicitly await with 30 second timeout
 let result = await publisher.sinkAsynchronously()
 
-// or with timeout
+// or with timeout explicitly
 let timedResult = await publisher.sinkAsynchronously(timeout: 1)
 ```
 
@@ -105,6 +109,74 @@ You can convert Swift async to a `Future` object with provided convenience init:
 ```swift
 let future = Future { 
     try await getSomethingAsync()
+}
+```
+
+### Auto Release Sink
+
+You can ignore the cancellable and expect that the closure will be removed on completion by using `autoReleaseSink`:
+
+```swift
+publisher.autoReleaseSink { _ in
+    // do something on completed
+} receiveValue: { 
+    // do something to receive value
+}
+```
+
+By default, it will auto release the closure after 30 seconds.
+
+If you want the closure to be released whenever some object is released, just pass the object:
+
+```swift
+publisher.autoReleaseSink(retainedTo: self) { _ in
+    // do something on completed
+} receiveValue: { 
+    // do something on receive value
+}
+```
+
+If you want the closure to be released using a timeout, just pass the timeout:
+
+```swift
+publisher.autoReleaseSink(timeout: 60) { _ in
+    // do something on completed
+} receiveValue: { 
+    // do something on receive value
+}
+```
+
+Whatever you pass, it will try to release the closure whenever one of the conditions is met:
+
+```swift
+// the closure will be released after completion, or 60 second, or when self is released.
+publisher.autoReleaseSink(retainedTo: self, timeout: 60) { _ in
+    // do something on completed
+} receiveValue: { 
+    // do something on receive value
+}
+```
+
+If you need to release it manually, the method return `RetainStateCancellable` object, which is a Cancellable that has a RetainState so you could know whether the closure is already released or not:
+
+```swift
+// the closure will be released after completion or 30 seconds, or when the self is released.
+let retainCancellable = publisher.autoReleaseSink(retainedTo: self, timeout: 30) { _ in
+    // do something on completed
+} receiveValue: { 
+    // do something on receive value
+}
+
+let typeErased = retainCancellable.eraseToAnyCancellable()
+
+...
+...
+
+switch retainCancellable.state { 
+    case .retained: 
+    print("closure still retained")
+    case .released: 
+    print("closure already released")
 }
 ```
 

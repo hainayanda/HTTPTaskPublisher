@@ -18,7 +18,8 @@ To run the example project, clone the repo, and run `pod install` from the Examp
 - Swift 5.5 or higher
 - iOS 13.0 or higher
 - MacOS 10.15 or higher
-- TVOS 13.0 or higer
+- TVOS 13.0 or higher
+- watchOS 8.0 or higher
 - XCode 13 or higher
 
 ### Cocoapods

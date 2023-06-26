@@ -19,7 +19,7 @@ class HTTPDataTaskPublisherSpec: QuickSpec {
         context("failing") {
             beforeEach {
                 factory = DataTaskFactoryMock(result: .failure(.init(.unknown)))
-                publisher = .init(dataTaskFactory: factory, urlRequest: .dummy)
+                publisher = .init(dataTaskFactory: factory, urlRequest: .dummy, duplicationHandling: .alwaysCreateNew)
             }
             it("should sink with error") {
                 let result = try sendRequest(using: publisher)
@@ -29,7 +29,7 @@ class HTTPDataTaskPublisherSpec: QuickSpec {
         context("succeed") {
             beforeEach {
                 factory = DataTaskFactoryMock(result: .success((Data(), HTTPURLResponse())))
-                publisher = .init(dataTaskFactory: factory, urlRequest: .dummy)
+                publisher = .init(dataTaskFactory: factory, urlRequest: .dummy, duplicationHandling: .alwaysCreateNew)
             }
             it("should sink with value") {
                 let result = try sendRequest(using: publisher)
@@ -92,6 +92,7 @@ private func expectToBeDefaultError(for result: Result<(data: Data, response: UR
 // MARK: DataTaskFactoryMock
 
 private class DataTaskFactoryMock: DataTaskPublisherFactory {
+    
     let result: Result<(data: Data, response: URLResponse), URLError>
     var request: URLRequest?
     
@@ -99,12 +100,11 @@ private class DataTaskFactoryMock: DataTaskPublisherFactory {
         self.result = result
     }
     
-    func anyDataTaskPublisher(for request: URLRequest) -> AnyPublisher<(data: Data, response: URLResponse), URLError> {
+    func anyDataTaskPublisher(for request: URLRequest, duplicationHandling: DuplicationHandling) -> Future<(data: Data, response: URLResponse), URLError> {
         self.request = request
         let result = self.result
         return Future { promise in
             promise(result)
         }
-        .eraseToAnyPublisher()
     }
 }

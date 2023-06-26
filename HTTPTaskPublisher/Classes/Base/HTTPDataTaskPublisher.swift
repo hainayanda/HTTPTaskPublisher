@@ -30,11 +30,13 @@ extension URLSession {
         public typealias Failure = HTTPURLError
         
         let dataTaskFactory: DataTaskPublisherFactory
+        let duplicationHandling: DuplicationHandling
         public internal(set) var urlRequest: URLRequest
         
-        init(dataTaskFactory: DataTaskPublisherFactory, urlRequest: URLRequest) {
+        init(dataTaskFactory: DataTaskPublisherFactory, urlRequest: URLRequest, duplicationHandling: DuplicationHandling) {
             self.dataTaskFactory = dataTaskFactory
             self.urlRequest = urlRequest
+            self.duplicationHandling = duplicationHandling
         }
         
         public func receive<S>(subscriber: S) where S: Subscriber, HTTPURLError == S.Failure, Response == S.Input {
@@ -44,7 +46,8 @@ extension URLSession {
         
         mutating public func send(request: URLRequest) async throws -> (data: Data, response: HTTPURLResponse) {
             self.urlRequest = request
-            return try await dataTaskFactory.anyDataTaskPublisher(for: request)
+            return try await dataTaskFactory
+                .anyDataTaskPublisher(for: request, duplicationHandling: duplicationHandling)
                 .httpResponseOnly()
                 .sinkAsynchronously(timeout: request.timeoutInterval)
         }

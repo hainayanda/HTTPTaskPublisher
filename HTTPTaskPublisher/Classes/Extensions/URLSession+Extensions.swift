@@ -9,8 +9,8 @@ import Foundation
 
 extension URLSession {
     
-    public func httpTaskPublisher(for urlRequest: URLRequest) -> HTTPDataTaskPublisher {
-        HTTPDataTaskPublisher(dataTaskFactory: self, urlRequest: urlRequest)
+    public func httpTaskPublisher(for urlRequest: URLRequest, whenDuplicated handle: DuplicationHandling = .alwaysCreateNew) -> HTTPDataTaskPublisher {
+        HTTPDataTaskPublisher(dataTaskFactory: self, urlRequest: urlRequest, duplicationHandling: handle)
     }
     
 }

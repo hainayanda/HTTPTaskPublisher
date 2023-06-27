@@ -28,14 +28,14 @@ HTTPTaskPublisher is available through [CocoaPods](https://cocoapods.org). To in
 it, simply add the following line to your Podfile:
 
 ```ruby
-pod 'HTTPTaskPublisher', '~> 1.0'
+pod 'HTTPTaskPublisher', '~> 1.1'
 ```
 
 ### Swift Package Manager from XCode
 
 - Add it using XCode menu **File > Swift Package > Add Package Dependency**
 - Add **<https://github.com/hainayanda/HTTPTaskPublisher.git>** as Swift Package URL
-- Set rules at **version**, with **Up to Next Major** option and put **1.0.0** as its version
+- Set rules at **version**, with **Up to Next Major** option and put **1.1.0** as its version
 - Click next and wait
 
 ### Swift Package Manager from Package.swift
@@ -44,7 +44,7 @@ Add as your target dependency in **Package.swift**
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/hainayanda/HTTPTaskPublisher.git", .upToNextMajor(from: "1.0.0"))
+    .package(url: "https://github.com/hainayanda/HTTPTaskPublisher.git", .upToNextMajor(from: "1.1.0"))
 ]
 ```
 
@@ -117,6 +117,30 @@ then it will generate a tuple like this:
 ```swift
 (decoded: MyObject, response: HTTPURLResponse)
 ```
+
+### Duplication Handling
+
+HTTPTaskPublisher will store any ongoing request in the `URLSession` until it's done. You can control how you want to do the request when an identical request is still ongoing by passing `DuplicationHandling` enum when creating a new `HTTPDataTaskPublisher`:
+
+```swift
+URLSession.shared.httpTaskPublisher(for: myRequest, whenDuplicated: .useCurrentIfPossible)
+    .sink { ... }
+```
+
+The `DuplicationHandling` is an enumeration that is declared like this:
+
+```swift
+public enum DuplicationHandling {
+    /// always create a new data task request no matter what
+    case alwaysCreateNew
+    /// subscribe to the current ongoing identical task if have any, otherwise, create a new data task
+    case useCurrentIfPossible
+    /// cancel the request if there is an ongoing identical task, otherwise, create a new data task
+    case dropIfDuplicated
+}
+```
+
+The default one is `alwaysCreateNew`.
 
 ### Validation
 

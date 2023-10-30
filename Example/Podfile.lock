@@ -1,11 +1,7 @@
 PODS:
-  - CombineAsync (1.1.3):
-    - Retain (~> 1.0.1)
-  - HTTPTaskPublisher (1.0.0):
-    - CombineAsync (~> 1.1.3)
+  - HTTPTaskPublisher (1.1.0)
   - Nimble (12.0.1)
   - Quick (7.0.2)
-  - Retain (1.0.1)
 
 DEPENDENCIES:
   - HTTPTaskPublisher (from `../`)
@@ -14,21 +10,17 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - CombineAsync
     - Nimble
     - Quick
-    - Retain
 
 EXTERNAL SOURCES:
   HTTPTaskPublisher:
     :path: "../"
 
 SPEC CHECKSUMS:
-  CombineAsync: fad0afd15f4e1982238bb50ee782ec373c48b2d6
-  HTTPTaskPublisher: 98eb390effd2c71d882c704bbf2d0d6189ac6d03
+  HTTPTaskPublisher: ddcb1609f7954f8aeddac55ab9e6c6c032e03aeb
   Nimble: b279b3ca9e094508778aab5c76417be158d3ad04
   Quick: efab97aca76d60be86c15daa533b2cdfbe1a74d3
-  Retain: 539b7c04ff369886c7e633ef1a76d0d1b11466db
 
 PODFILE CHECKSUM: c85be8a50901a7c8a431afcca14cd76662e7656f
 

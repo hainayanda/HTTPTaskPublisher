@@ -28,10 +28,9 @@ class IntegrationSpec: QuickSpec {
             var response: HTTPURLResponse?
             waitUntil(timeout: .seconds(30)) { done in
                 cancellable = URLSession.shared.httpTaskPublisher(for: request)
-                    .adapt { $0 }
                     .allowed(statusCode: 200)
                     .validate { _, _ in .valid }
-                    .retryDecision { _, _ in .drop }
+                    .retryDecision { _ in .drop }
                     .decode(type: Result.self, decoder: JSONDecoder())
                     .retry(3)
                     .sink { completion in

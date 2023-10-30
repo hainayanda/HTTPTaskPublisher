@@ -23,10 +23,5 @@
   },
   "swift_versions": "5.5",
   "source_files": "HTTPTaskPublisher/Classes/**/*",
-  "dependencies": {
-    "CombineAsync": [
-      "~> 1.1.3"
-    ]
-  },
   "swift_version": "5.5"
 }

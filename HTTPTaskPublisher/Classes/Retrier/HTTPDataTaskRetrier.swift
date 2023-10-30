@@ -10,7 +10,6 @@ import Foundation
 // MARK: HTTPDataTaskRetryDecision
 
 public enum HTTPDataTaskRetryDecision: Equatable {
-    case retryWithNewRequest(URLRequest)
     case retry
     case dropWithReason(reason: String)
     case drop
@@ -19,5 +18,5 @@ public enum HTTPDataTaskRetryDecision: Equatable {
 // MARK: HTTPDataTaskRetrier
 
 public protocol HTTPDataTaskRetrier {
-    func httpDataTaskShouldRetry(for error: HTTPURLError, request: URLRequest) async throws -> HTTPDataTaskRetryDecision
+    func httpDataTaskShouldRetry(for error: HTTPURLError) async throws -> HTTPDataTaskRetryDecision
 }

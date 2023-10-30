@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-protocol DataTaskPublisherFactory {
+public protocol DataTaskPublisherFactory {
     func anyDataTaskPublisher(for request: URLRequest, duplicationHandling: DuplicationHandling) -> Future<(data: Data, response: URLResponse), URLError>
 }
 
@@ -34,7 +34,7 @@ extension URLSession: DataTaskPublisherFactory {
         }
     }
     
-    func anyDataTaskPublisher(for request: URLRequest, duplicationHandling: DuplicationHandling) -> Future<(data: Data, response: URLResponse), URLError> {
+    public func anyDataTaskPublisher(for request: URLRequest, duplicationHandling: DuplicationHandling) -> Future<(data: Data, response: URLResponse), URLError> {
         switch duplicationHandling {
         case .useCurrentIfPossible:
             return getPublisher(of: request)

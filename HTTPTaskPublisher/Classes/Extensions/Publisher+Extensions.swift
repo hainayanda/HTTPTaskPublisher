@@ -10,7 +10,7 @@ import Combine
 
 extension Publisher where Output == (data: Data, response: URLResponse), Failure == URLError {
     
-    func httpResponseOnly() -> AnyPublisher<URLSession.HTTPDataTaskPublisher.Response, HTTPURLError> {
+    func httpResponseOnly() -> AnyPublisher<(data: Data, response: HTTPURLResponse), HTTPURLError> {
         tryMap { output in
             guard let response = output.response as? HTTPURLResponse else {
                 throw HTTPURLError.expectHTTPResponse(data: output.data, response: output.response)

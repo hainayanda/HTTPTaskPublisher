@@ -7,11 +7,10 @@
 
 import Foundation
 import Combine
-import CombineAsync
 
 public indirect enum HTTPURLError: Error {
-    case failWhileRetry(error: Error, request: URLRequest, orignalError: HTTPURLError)
-    case failToRetry(reason: String, request: URLRequest, orignalError: HTTPURLError)
+    case failWhileRetry(error: Error, orignalError: HTTPURLError)
+    case failToRetry(reason: String, orignalError: HTTPURLError)
     case failWhileAdapt(request: URLRequest, originalError: Error)
     case failDecode(data: Data, response: HTTPURLResponse, decodeError: Error)
     case failValidation(reason: String, data: Data, response: HTTPURLResponse)
@@ -23,9 +22,9 @@ public indirect enum HTTPURLError: Error {
 extension HTTPURLError {
     public var statusCode: Int? {
         switch self {
-        case .failWhileRetry(let error, _, let orignalError):
+        case .failWhileRetry(let error, let orignalError):
             return error.asHTTPURLError().statusCode ?? orignalError.statusCode
-        case .failToRetry(_, _, let orignalError):
+        case .failToRetry(_, let orignalError):
             return orignalError.statusCode
         case .failValidation(_, _, let response), .failDecode(_, let response, _):
             return response.statusCode
@@ -45,8 +44,6 @@ extension Error {
             return httpError
         } else if let urlError = self as? URLError {
             return .urlError(urlError)
-        } else if self is PublisherToAsyncError {
-            return HTTPURLError.urlError(URLError(.timedOut))
         } else {
             return .error(self)
         }

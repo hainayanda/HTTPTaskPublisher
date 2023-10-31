@@ -19,21 +19,63 @@ class HTTPDataTaskPublisherSpec: QuickSpec {
         context("failing") {
             beforeEach {
                 factory = DataTaskFactoryMock(result: .failure(.init(.unknown)))
-                publisher = .init(dataTaskFactory: factory, urlRequest: .dummy, duplicationHandling: .alwaysCreateNew)
+                publisher = .init(dataTaskFactory: factory, urlRequest: .dummy, adapter: nil, duplicationHandling: .alwaysCreateNew)
             }
             it("should sink with error") {
-                let result = try sendRequest(using: publisher)
+                let result = try waitForResponse(to: publisher)
                 expectToBeDefaultError(for: result)
+            }
+            it("should adapt with new request") {
+                let adapter = MockAdapter()
+                publisher = .init(dataTaskFactory: factory, urlRequest: .dummy, adapter: adapter, duplicationHandling: .alwaysCreateNew)
+                let newRequest = URLRequest(url: URL(string: "http://www.adapt.com")!)
+                adapter.result = .success(newRequest)
+                
+                let result = try waitForResponse(to: publisher)
+                
+                expect(adapter.adapterCalled).to(beTrue())
+                expectToBeDefaultError(for: result)
+            }
+            it("should not with new request") {
+                let adapter = MockAdapter()
+                publisher = .init(dataTaskFactory: factory, urlRequest: .dummy, adapter: adapter, duplicationHandling: .alwaysCreateNew)
+                adapter.result = .failure(.expectedError)
+                
+                let result = try waitForResponse(to: publisher)
+                
+                expect(adapter.adapterCalled).to(beTrue())
+                expectToBeExpectedError(for: result)
             }
         }
         context("succeed") {
             beforeEach {
                 factory = DataTaskFactoryMock(result: .success((Data(), HTTPURLResponse())))
-                publisher = .init(dataTaskFactory: factory, urlRequest: .dummy, duplicationHandling: .alwaysCreateNew)
+                publisher = .init(dataTaskFactory: factory, urlRequest: .dummy, adapter: nil, duplicationHandling: .alwaysCreateNew)
             }
             it("should sink with value") {
-                let result = try sendRequest(using: publisher)
+                let result = try waitForResponse(to: publisher)
                 expectToBeDefaultSuccess(for: result)
+            }
+            it("should adapt with new request") {
+                let adapter = MockAdapter()
+                publisher = .init(dataTaskFactory: factory, urlRequest: .dummy, adapter: adapter, duplicationHandling: .alwaysCreateNew)
+                let newRequest = URLRequest(url: URL(string: "http://www.adapt.com")!)
+                adapter.result = .success(newRequest)
+                
+                let result = try waitForResponse(to: publisher)
+                
+                expect(adapter.adapterCalled).to(beTrue())
+                expectToBeDefaultSuccess(for: result)
+            }
+            it("should not adapt with new request") {
+                let adapter = MockAdapter()
+                publisher = .init(dataTaskFactory: factory, urlRequest: .dummy, adapter: adapter, duplicationHandling: .alwaysCreateNew)
+                adapter.result = .failure(.expectedError)
+                
+                let result = try waitForResponse(to: publisher)
+                
+                expect(adapter.adapterCalled).to(beTrue())
+                expectToBeExpectedError(for: result)
             }
         }
     }
@@ -89,22 +131,36 @@ private func expectToBeDefaultError(for result: Result<(data: Data, response: UR
     }
 }
 
-// MARK: DataTaskFactoryMock
-
-private class DataTaskFactoryMock: DataTaskPublisherFactory {
-    
-    let result: Result<(data: Data, response: URLResponse), URLError>
-    var request: URLRequest?
-    
-    init(result: Result<(data: Data, response: URLResponse), URLError>) {
-        self.result = result
+private func expectToBeExpectedError(for result: Result<(data: Data, response: URLResponse), HTTPURLError>) {
+    switch result {
+    case .success:
+        fail("result should fail")
+    case .failure(let error):
+        guard case .failWhileAdapt(_, _) = error else {
+            fail("result should produce expected error but produce \(String(describing: error))")
+            return
+        }
+        return
     }
+}
+
+// MARK: MockAdapter
+
+private class MockAdapter: HTTPDataTaskAdapter {
     
-    func anyDataTaskPublisher(for request: URLRequest, duplicationHandling: DuplicationHandling) -> Future<(data: Data, response: URLResponse), URLError> {
+    var result: Result<URLRequest, TestError> = .failure(.initialError)
+    var request: URLRequest?
+    var adapterCalled: Bool { adapterCalledCount > 0 }
+    var adapterCalledCount: Int = 0
+    
+    func httpDataTaskAdapt(for request: URLRequest) async throws -> URLRequest {
+        adapterCalledCount += 1
         self.request = request
-        let result = self.result
-        return Future { promise in
-            promise(result)
+        switch result {
+        case .success(let adaptRequest):
+            return adaptRequest
+        case .failure(let error):
+            throw error
         }
     }
 }

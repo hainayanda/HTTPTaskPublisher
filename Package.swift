@@ -18,25 +18,24 @@ let package = Package(
         )
     ],
     dependencies: [
-       .package(url: "https://github.com/hainayanda/CombineAsync.git", from: "1.1.3"),
         // uncomment code below to test
-       .package(url: "https://github.com/Quick/Quick.git", from: "7.0.0"),
-       .package(url: "https://github.com/Quick/Nimble.git", from: "12.0.0")
+//       .package(url: "https://github.com/Quick/Quick.git", from: "7.0.0"),
+//       .package(url: "https://github.com/Quick/Nimble.git", from: "12.0.0")
     ],
     targets: [
         .target(
             name: "HTTPTaskPublisher",
-            dependencies: ["CombineAsync"],
+            dependencies: [],
             path: "HTTPTaskPublisher/Classes"
         ),
         // uncomment code below to test
-       .testTarget(
-           name: "HTTPTaskPublisherTests",
-           dependencies: [
-               "HTTPTaskPublisher", "Quick", "Nimble"
-           ],
-           path: "Example/Tests",
-           exclude: ["Info.plist"]
-       )
+//       .testTarget(
+//           name: "HTTPTaskPublisherTests",
+//           dependencies: [
+//               "HTTPTaskPublisher", "Quick", "Nimble"
+//           ],
+//           path: "Example/Tests",
+//           exclude: ["Info.plist"]
+//       )
     ]
 )

@@ -93,8 +93,8 @@ and it will emit an error type of `HTTPURLError`:
 
 ```swift
 public indirect enum HTTPURLError: Error {
-    case failWhileRetry(error: Error, request: URLRequest, orignalError: HTTPURLError)
-    case failToRetry(reason: String, request: URLRequest, orignalError: HTTPURLError)
+    case failWhileRetry(error: Error, orignalError: HTTPURLError)
+    case failToRetry(reason: String, orignalError: HTTPURLError)
     case failWhileAdapt(request: URLRequest, originalError: Error)
     case failDecode(data: Data, response: HTTPURLResponse, decodeError: Error)
     case failValidation(reason: String, data: Data, response: HTTPURLResponse)
@@ -265,16 +265,11 @@ URLSession.shared.httpTaskPublisher(for: myRequest)
 You can adapt your request before sending it like this:
 
 ```swift
-URLSession.shared.httpTaskPublisher(for: myRequest)
-    .adapt { request in
-        // modify the request
-        return request
-    }
+URLSession.shared.httpTaskPublisher(for: myRequest, adapter: myAdapter)
     .sink { ... }
 ```
 
-The closure will be called right before it is sent. It will then use the new request provided by the adaptation or throw an `HTTPURLErrorfailWhileAdapt(request:originalError:)` even before the request has been made.
-If you want to do a more complex adaptation then you can implement `HTTPDataTaskAdapter`:
+with `HTTPDataTaskAdapter` that implemented like this:
 
 ```swift
 struct MyAdapter: HTTPDataTaskAdapter {
@@ -291,62 +286,17 @@ struct MyAdapter: HTTPDataTaskAdapter {
 }
 ```
 
-and pass it:
+### Combine
 
-```swift
-URLSession.shared.httpTaskPublisher(for: myRequest)
-    .adapt(using: MyAdapter())
-    .sink { ... }
-```
-
-### Interceptor
-
-Sometimes you will need both a retrier and adapter like when you are using a refresh token mechanism. We can create one instance that implements `HTTPDataTaskInterceptor` that is actually just a typealias of `HTTPDataTaskAdapter` and `HTTPDataTaskRetrier`:
-
-```swift
-struct MyInterceptor: HTTPDataTaskInterceptor {
-    
-    func httpDataTaskAdapt(for request: URLRequest) async throws -> URLRequest {
-        try await applyToken(to: request)
-    }
-
-    func httpDataTaskShouldRetry(for error: HTTPURLError, request: URLRequest) async throws -> HTTPDataTaskRetryDecision {
-        guard let code = error.statusCode, code == 401 else { 
-            return .drop
-        }
-        let tokenizedRequest = try await applyToken(to: request)
-        return .retryWithNewRequest(tokenizedRequest)
-    }
-
-    private func applyToken(to request: URLRequest) async throws -> URLRequest { 
-        ...
-        ...
-    }
-}
-```
-
-and pass it:
-
-```swift
-URLSession.shared.httpTaskPublisher(for: myRequest)
-    .intercept(using: MyInterceptor())
-    .sink { ... }
-```
-
-### Combine and CombineAsync
-
-Since HTTPTaskPublisher is created using the [Combine](https://developer.apple.com/documentation/combine) and [CombineAsync](https://github.com/hainayanda/CombineAsync) framework, you can do anything that is allowed by Combine and CombineAsync like this:
+Since HTTPTaskPublisher is created using the [Combine](https://developer.apple.com/documentation/combine) framework, you can do anything that is allowed by Combine like this:
 
 ```swift
 import Combine
-import CombineAsync
 
 let payloads = try await URLSession.shared.httpTaskPublisher(for: myRequest)
-    .intercept(using: MyInterceptor())
-    .decode(type: Result.self, decoder: JSONDecoder())
     .retry(2)
     .map { $0.decoded.payloads }
-    .sinkAsynchronously()
+    .sink { ... }
 ```
 ## Contribute
 

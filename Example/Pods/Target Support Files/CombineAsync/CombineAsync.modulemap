@@ -1,6 +1,0 @@
-framework module CombineAsync {
-  umbrella header "CombineAsync-umbrella.h"
-
-  export *
-  module * { export * }
-}

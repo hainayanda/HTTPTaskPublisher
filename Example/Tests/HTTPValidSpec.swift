@@ -14,19 +14,21 @@ import Combine
 
 class HTTPValidSpec: QuickSpec {
     override class func spec() {
-        var sender: URLRequestSenderMock!
-        var publisher: URLSession.HTTPValid<URLRequestSenderMock>!
+        var sender: MockablePublisher!
+        var publisher: URLSession.HTTPValid<MockablePublisher>!
         var validator: MockValidator!
+        beforeEach {
+            validator = MockValidator()
+        }
         context("request is failing") {
             beforeEach {
-                validator = MockValidator()
-                sender = URLRequestSenderMock(result: .failure(.expectedError))
-                publisher = .init(sender: sender, validator: validator)
+                sender = MockablePublisher(.failure(.error(TestError.expectedError)))
+                publisher = .init(upstream: sender, validator: validator)
             }
             it("valid should never called") {
                 validator.validation = .valid
                 
-                let result = try sendRequest(using: publisher)
+                let result = try waitForResponse(to: publisher)
                 
                 expect(validator.called).to(beFalse())
                 expectToBeExpectedError(for: result)
@@ -34,7 +36,7 @@ class HTTPValidSpec: QuickSpec {
             it("invalid should never called") {
                 validator.validation = .invalid(reason: "expected error")
                 
-                let result = try sendRequest(using: publisher)
+                let result = try waitForResponse(to: publisher)
                 
                 expect(validator.called).to(beFalse())
                 expectToBeExpectedError(for: result)
@@ -42,14 +44,13 @@ class HTTPValidSpec: QuickSpec {
         }
         context("request is succeed") {
             beforeEach {
-                validator = MockValidator()
-                sender = URLRequestSenderMock(result: .success((Data(), HTTPURLResponse())))
-                publisher = .init(sender: sender, validator: validator)
+                sender = MockablePublisher(.success((data: Data(), response: HTTPURLResponse())))
+                publisher = .init(upstream: sender, validator: validator)
             }
             it("should adapt with new request") {
                 validator.validation = .valid
                 
-                let result = try sendRequest(using: publisher)
+                let result = try waitForResponse(to: publisher)
                 
                 expect(validator.called).to(beTrue())
                 expectToBeDefaultSuccess(for: result)
@@ -57,39 +58,13 @@ class HTTPValidSpec: QuickSpec {
             it("should not with new request") {
                 validator.validation = .invalid(reason: "expected error")
                 
-                let result = try sendRequest(using: publisher)
+                let result = try waitForResponse(to: publisher)
                 
                 expect(validator.called).to(beTrue())
                 expectToBeValidationError(for: result)
             }
         }
     }
-}
-
-// MARK: Test
-
-private func sendRequest(using publisher: URLSession.HTTPValid<URLRequestSenderMock>) throws -> Result<(data: Data, response: URLResponse), HTTPURLError> {
-    var result: Result<(data: Data, response: URLResponse), HTTPURLError>?
-    var cancellable: AnyCancellable?
-    waitUntil { done in
-        cancellable = publisher.sink { completion in
-            switch completion {
-            case .finished:
-                break
-            case .failure(let error):
-                result = .failure(error)
-            }
-            done()
-        } receiveValue: { value in
-            result = .success(value)
-        }
-    }
-    cancellable?.cancel()
-    guard let result else {
-        fail("result should not be nil at this point")
-        throw TestError.unexpectedError
-    }
-    return result
 }
 
 // MARK: Expectation

@@ -1,6 +1,6 @@
-# HTTPTaskPublisher
+# Swift HTTP Task Publisher
 
-HTTPTaskPublisher does not aim to recreate the `DataTaskPublisher`, but as an extension of it. In fact, HTTPTaskPublisher is using `DataTaskPublisher` behind it. What it did do is, it will do the hard work to ensure your HTTP request works smoothly.
+Swift HTTP Task Publisher is a powerful extension of the DataTaskPublisher, designed to simplify and enhance HTTP request handling in your Swift projects.
 
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/b10d43146b114ad4a98882ba9e8f96be)](https://app.codacy.com/gh/hainayanda/HTTPTaskPublisher/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 ![build](https://github.com/hainayanda/HTTPTaskPublisher/workflows/build/badge.svg)
@@ -9,9 +9,14 @@ HTTPTaskPublisher does not aim to recreate the `DataTaskPublisher`, but as an ex
 [![License](https://img.shields.io/cocoapods/l/HTTPTaskPublisher.svg?style=flat)](https://cocoapods.org/pods/HTTPTaskPublisher)
 [![Platform](https://img.shields.io/cocoapods/p/HTTPTaskPublisher.svg?style=flat)](https://cocoapods.org/pods/HTTPTaskPublisher)
 
-## Example
+## Example Project
 
-To run the example project, clone the repo, and run `pod install` from the Example directory first.
+To run the example project, follow these steps:
+
+1. Clone the repository.
+2. Navigate to the "Example" directory.
+3. Run `pod install`.
+4. Open the Xcode workspace and run the example app.
 
 ## Requirements
 
@@ -20,50 +25,53 @@ To run the example project, clone the repo, and run `pod install` from the Examp
 - MacOS 10.15 or higher
 - TVOS 13.0 or higher
 - watchOS 8.0 or higher
-- XCode 13 or higher
+- Xcode 13 or higher
 
-### Cocoapods
+## Installation
 
-HTTPTaskPublisher is available through [CocoaPods](https://cocoapods.org). To install
-it, simply add the following line to your Podfile:
+### Installation with CocoaPods
+
+To install Swift HTTP Task Publisher via CocoaPods, add the following line to your Podfile:
 
 ```ruby
-pod 'HTTPTaskPublisher', '~> 1.1'
+pod 'HTTPTaskPublisher', '~> 2.0'
 ```
 
-### Swift Package Manager from XCode
+### Installation with Swift Package Manager (Xcode)
 
-- Add it using XCode menu **File > Swift Package > Add Package Dependency**
+- Go to Xcode menu **File > Swift Package > Add Package Dependency**
 - Add **<https://github.com/hainayanda/HTTPTaskPublisher.git>** as Swift Package URL
-- Set rules at **version**, with **Up to Next Major** option and put **1.1.0** as its version
-- Click next and wait
+- Set rules to **version**, with the **Up to Next Major** option option and use **2.0.0** as the version.
+- Click "Next" and wait for the package to be fetched.
 
 ### Swift Package Manager from Package.swift
 
-Add as your target dependency in **Package.swift**
+To use `Swift HTTP Task Publisher` as a dependency in your Swift Package Manager project, add it to your `Package.swift` file's dependencies:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/hainayanda/HTTPTaskPublisher.git", .upToNextMajor(from: "1.1.0"))
+    .package(url: "https://github.com/hainayanda/HTTPTaskPublisher.git", .upToNextMajor(from: "2.0.0"))
 ]
 ```
 
-Use it in your target as a `HTTPTaskPublisher`
+Then, in your target's dependencies, add `HTTPTaskPublisher`:
 
 ```swift
  .target(
-    name: "MyModule",
-    dependencies: ["HTTPTaskPublisher"]
+    name: "YourTargetName",
+    dependencies: [
+        .product(name: "HTTPTaskPublisher", package: "HTTPTaskPublisher"),
+    ]
 )
 ```
 
 ## Author
 
-hainayanda, hainayanda@outlook.com
+HTTPTaskPublisher is developed by Nayanda Haberty. You can contact the author at hainayanda@outlook.com
 
 ## License
 
-HTTPTaskPublisher is available under the MIT license. See the LICENSE file for more info.
+HTTPTaskPublisher is released under the MIT license. For more details, please refer to the LICENSE file.
 
 ## Basic Usage
 
@@ -72,14 +80,13 @@ To do an HTTP request, it will be similar to how to do with `DataTaskPublisher`:
 ```swift
 var myRequest: URLRequest(url: url)
 
-...
-...
+// ...
 
 let cancellable = URLSession.shared.httpTaskPublisher(for: myRequest)
     .sink { completion in
         // do something after complete
     } receiveValue: { response in
-        // do something with response
+        // do something with the response
     }
 ```
 
@@ -120,7 +127,7 @@ then it will generate a tuple like this:
 
 ### Duplication Handling
 
-HTTPTaskPublisher will store any ongoing request in the `URLSession` until it's done. You can control how you want to do the request when an identical request is still ongoing by passing `DuplicationHandling` enum when creating a new `HTTPDataTaskPublisher`:
+Swift HTTP Task Publisher will store any ongoing request in the `URLSession` until it's done. You can control how you want to do the request when an identical request is still ongoing by passing `DuplicationHandling` enum when creating a new `HTTPDataTaskPublisher`:
 
 ```swift
 URLSession.shared.httpTaskPublisher(for: myRequest, whenDuplicated: .useCurrentIfPossible)
@@ -131,11 +138,8 @@ The `DuplicationHandling` is an enumeration that is declared like this:
 
 ```swift
 public enum DuplicationHandling {
-    /// always create a new data task request no matter what
     case alwaysCreateNew
-    /// subscribe to the current ongoing identical task if have any, otherwise, create a new data task
     case useCurrentIfPossible
-    /// cancel the request if there is an ongoing identical task, otherwise, create a new data task
     case dropIfDuplicated
 }
 ```
@@ -144,7 +148,7 @@ The default one is `alwaysCreateNew`.
 
 ### Validation
 
-You can add a validation to the request to make it throw an error whenever the response is failing the validation:
+You can add validation to the request to make it throw an error whenever the response is failing the validation:
 
 ```swift
 URLSession.shared.httpTaskPublisher(for: myRequest)
@@ -156,6 +160,7 @@ URLSession.shared.httpTaskPublisher(for: myRequest)
 ```
 
 The closure will be called after the request is successful and produces `Data` and `HTTPURLResponse`. You can validate the result and return `HTTPDataTaskValidation` as the validation result. It will then be used to determine that the request should be passed to the subscriber or throw `HTTPURLError.failValidation(reason:data:response:)`.
+
 `HTTPDataTaskValidation` is an enumeration that is declared like this:
 
 ```swift
@@ -221,11 +226,11 @@ URLSession.shared.httpTaskPublisher(for: myRequest)
 ```
 
 The closure will be called when the request is failing and producing `HTTPURLError`. You can decide based on this and return `HTTPDataTaskRetryDecision` as the retry decision result. It will then be used to determine whether the request should be retried or not.
+
 `HTTPDataTaskRetryDecision` is an enumeration that is declared like this:
 
 ```swift
 public enum HTTPDataTaskRetryDecision: Equatable {
-    case retryWithNewRequest(URLRequest)
     case retry
     case dropWithReason(reason: String)
     case drop
@@ -243,10 +248,10 @@ struct MyRetrier: HTTPDataTaskRetrier {
         }
         let token = try await refreshToken()
 
-        // create new request with token
-        ...
-        ...
-        
+        // create a new request with token
+        // ...
+        // ...
+
         return .retryWithNewRequest(newRequest)
     }
 }
@@ -277,9 +282,9 @@ struct MyAdapter: HTTPDataTaskAdapter {
     func httpDataTaskAdapt(for request: URLRequest) async throws -> URLRequest {
         let myToken = getTokenFromCache() ?? try await refreshToken()
 
-        // create new request with token
-        ...
-        ...
+        // create a new request with token
+        // ...
+        // ...
             
         return newRequest
     }

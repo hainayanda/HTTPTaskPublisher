@@ -14,10 +14,6 @@ struct HTTPStatusCodeValidator: HTTPDataTaskValidator {
     
     let allowedStatusCodes: [Int]
     
-    init(allowedStatusCodes: [Int]) {
-        self.allowedStatusCodes = allowedStatusCodes
-    }
-    
     func httpDataTaskIsValid(for data: Data, response: HTTPURLResponse) -> HTTPDataTaskValidation {
         allowedStatusCodes.contains(response.statusCode)
         ? .valid

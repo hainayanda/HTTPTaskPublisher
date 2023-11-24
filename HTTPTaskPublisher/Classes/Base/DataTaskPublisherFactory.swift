@@ -8,8 +8,10 @@
 import Foundation
 import Combine
 
+public typealias URLResponseOutput = (data: Data, response: URLResponse)
+
 public protocol DataTaskPublisherFactory {
-    func anyDataTaskPublisher(for request: URLRequest, duplicationHandling: DuplicationHandling) -> Future<(data: Data, response: URLResponse), URLError>
+    func anyDataTaskPublisher(for request: URLRequest, duplicationHandling: DuplicationHandling) -> Future<URLResponseOutput, URLError>
 }
 
 public enum DuplicationHandling {
@@ -34,7 +36,7 @@ extension URLSession: DataTaskPublisherFactory {
         }
     }
     
-    public func anyDataTaskPublisher(for request: URLRequest, duplicationHandling: DuplicationHandling) -> Future<(data: Data, response: URLResponse), URLError> {
+    public func anyDataTaskPublisher(for request: URLRequest, duplicationHandling: DuplicationHandling) -> Future<URLResponseOutput, URLError> {
         switch duplicationHandling {
         case .useCurrentIfPossible:
             return getPublisher(of: request)
@@ -48,15 +50,15 @@ extension URLSession: DataTaskPublisherFactory {
         return createNewPublisher(for: request)
     }
     
-    private func getPublisher(of request: URLRequest) -> Future<(data: Data, response: URLResponse), URLError> {
+    private func getPublisher(of request: URLRequest) -> Future<URLResponseOutput, URLError> {
         guard let currentPublisher = ongoingRequest[request]?.future else {
             return createNewPublisher(for: request)
         }
         return currentPublisher
     }
     
-    private func createNewPublisher(for request: URLRequest) -> Future<(data: Data, response: URLResponse), URLError> {
-        let future: Future<(data: Data, response: URLResponse), URLError> = .init { promise in
+    private func createNewPublisher(for request: URLRequest) -> Future<URLResponseOutput, URLError> {
+        let future: Future<URLResponseOutput, URLError> = .init { promise in
             self.dataTask(with: request) { data, response, error in
                 if let error {
                     promise(.failure(error.asUrlError))
@@ -76,9 +78,9 @@ extension URLSession: DataTaskPublisherFactory {
 }
 
 struct WeakFutureWrapper {
-    weak var future: Future<(data: Data, response: URLResponse), URLError>?
+    weak var future: Future<URLResponseOutput, URLError>?
     
-    init(future: Future<(data: Data, response: URLResponse), URLError>? = nil) {
+    init(future: Future<URLResponseOutput, URLError>? = nil) {
         self.future = future
     }
 }

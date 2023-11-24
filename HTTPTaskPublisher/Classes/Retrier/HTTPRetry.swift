@@ -10,10 +10,11 @@ import Combine
 
 extension URLSession {
     
-    public class HTTPRetry<Upstream: Publisher & HTTPDataTaskDemandable>: HTTPDataTaskSubscribable, Publisher, Subscriber where Upstream.Output == (data: Data, response: HTTPURLResponse), Upstream.Failure == HTTPURLError {
+    public class HTTPRetry<Upstream: Publisher & HTTPDataTaskDemandable>: HTTPDataTaskSubscribable, Publisher, Subscriber 
+    where Upstream.Output == HTTPURLResponseOutput, Upstream.Failure == HTTPURLError {
         
-        public typealias Input = (data: Data, response: HTTPURLResponse)
-        public typealias Output = (data: Data, response: HTTPURLResponse)
+        public typealias Input = HTTPURLResponseOutput
+        public typealias Output = HTTPURLResponseOutput
         public typealias Failure = HTTPURLError
         
         let retrier: HTTPDataTaskRetrier
@@ -31,7 +32,7 @@ extension URLSession {
         
         // MARK: Publisher
         
-        public func receive<S>(subscriber: S) where S : Subscriber, Upstream.Failure == S.Failure, (data: Data, response: HTTPURLResponse) == S.Input {
+        public func receive<S>(subscriber: S) where S: Subscriber, Upstream.Failure == S.Failure, HTTPURLResponseOutput == S.Input {
             let subscription = HTTPDataTaskSubscription(publisher: self, subscriber: subscriber)
             subscriber.receive(subscription: subscription)
         }
@@ -59,7 +60,7 @@ extension URLSession {
             }
         }
         
-        public func receive(_ input: (data: Data, response: HTTPURLResponse)) -> Subscribers.Demand {
+        public func receive(_ input: HTTPURLResponseOutput) -> Subscribers.Demand {
             isWaitingUpstream = false
             dequeueSubscriber(with: input.data, response: input.response)
             return .none
@@ -96,7 +97,7 @@ extension URLSession {
 
 // MARK: Publisher + Extensions
 
-extension Publisher where Self: HTTPDataTaskDemandable, Output == (data: Data, response: HTTPURLResponse), Failure == HTTPURLError {
+extension Publisher where Self: HTTPDataTaskDemandable, Output == HTTPURLResponseOutput, Failure == HTTPURLError {
     
     public func retrying(using retrier: HTTPDataTaskRetrier, retryDelay: TimeInterval = 0.1) -> URLSession.HTTPRetry<Self> {
         URLSession.HTTPRetry(upstream: self, retrier: retrier, retryDelay: retryDelay)

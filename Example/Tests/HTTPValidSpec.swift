@@ -69,7 +69,7 @@ class HTTPValidSpec: QuickSpec {
 
 // MARK: Expectation
 
-private func expectToBeDefaultSuccess(for result: Result<(data: Data, response: URLResponse), HTTPURLError>) {
+private func expectToBeDefaultSuccess(for result: Result<URLResponseOutput, HTTPURLError>) {
     switch result {
     case .success:
         return
@@ -78,7 +78,7 @@ private func expectToBeDefaultSuccess(for result: Result<(data: Data, response: 
     }
 }
 
-private func expectToBeValidationError(for result: Result<(data: Data, response: URLResponse), HTTPURLError>) {
+private func expectToBeValidationError(for result: Result<URLResponseOutput, HTTPURLError>) {
     switch result {
     case .success:
         fail("result should fail")
@@ -91,7 +91,7 @@ private func expectToBeValidationError(for result: Result<(data: Data, response:
     }
 }
 
-private func expectToBeExpectedError(for result: Result<(data: Data, response: URLResponse), HTTPURLError>) {
+private func expectToBeExpectedError(for result: Result<URLResponseOutput, HTTPURLError>) {
     switch result {
     case .success:
         fail("result should fail")

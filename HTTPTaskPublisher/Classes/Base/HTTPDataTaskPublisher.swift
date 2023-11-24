@@ -61,7 +61,7 @@ extension URLSession {
     
     public class HTTPDataTaskPublisher: Publisher, HTTPDataTaskSubscribable {
         
-        public typealias Output = (data: Data, response: HTTPURLResponse)
+        public typealias Output = HTTPURLResponseOutput
         public typealias Failure = HTTPURLError
         
         let dataTaskFactory: DataTaskPublisherFactory
@@ -122,7 +122,7 @@ extension URLSession {
         }
     }
     
-    class HTTPDataTaskSubscription<S: Subscriber>: Subscription, HTTPDataTaskReceiver where S.Failure == HTTPURLError, S.Input == (data: Data, response: HTTPURLResponse) {
+    class HTTPDataTaskSubscription<S: Subscriber>: Subscription, HTTPDataTaskReceiver where S.Failure == HTTPURLError, S.Input == HTTPURLResponseOutput {
         
         var publisher: HTTPDataTaskDemandable?
         var subscriber: S?

@@ -12,16 +12,16 @@ import Combine
 
 class MockablePublisher: Publisher, HTTPDataTaskDemandable {
     
-    typealias Output = (data: Data, response: HTTPURLResponse)
+    typealias Output = HTTPURLResponseOutput
     typealias Failure = HTTPURLError
     
-    let result: Result<(data: Data, response: HTTPURLResponse), HTTPURLError>
+    let result: Result<HTTPURLResponseOutput, HTTPURLError>
     
-    init(_ result: Result<(data: Data, response: HTTPURLResponse), HTTPURLError>) {
+    init(_ result: Result<HTTPURLResponseOutput, HTTPURLError>) {
         self.result = result
     }
     
-    func receive<S>(subscriber: S) where S : Subscriber, HTTPTaskPublisher.HTTPURLError == S.Failure, (data: Data, response: HTTPURLResponse) == S.Input {
+    func receive<S>(subscriber: S) where S: Subscriber, HTTPTaskPublisher.HTTPURLError == S.Failure, HTTPURLResponseOutput == S.Input {
         let subscription = URLSession.HTTPDataTaskSubscription(publisher: self, subscriber: subscriber)
         subscriber.receive(subscription: subscription)
     }
@@ -47,14 +47,14 @@ extension URLRequest {
 
 class DataTaskFactoryMock: DataTaskPublisherFactory {
     
-    let result: Result<(data: Data, response: URLResponse), URLError>
+    let result: Result<URLResponseOutput, URLError>
     var request: URLRequest?
     
-    init(result: Result<(data: Data, response: URLResponse), URLError>) {
+    init(result: Result<URLResponseOutput, URLError>) {
         self.result = result
     }
     
-    func anyDataTaskPublisher(for request: URLRequest, duplicationHandling: DuplicationHandling) -> Future<(data: Data, response: URLResponse), URLError> {
+    func anyDataTaskPublisher(for request: URLRequest, duplicationHandling: DuplicationHandling) -> Future<URLResponseOutput, URLError> {
         self.request = request
         let result = self.result
         return Future { promise in

@@ -10,11 +10,9 @@ import Combine
 
 struct HTTPClosureRetrier: HTTPDataTaskRetrier {
     
-    typealias RetrierClosure = (HTTPURLError) async throws -> HTTPDataTaskRetryDecision
+    let retryClosure: (HTTPURLError) async throws -> HTTPDataTaskRetryDecision
     
-    let retryClosure: RetrierClosure
-    
-    init(_ retryClosure: @escaping RetrierClosure) {
+    init(_ retryClosure: @Sendable @escaping (HTTPURLError) async throws -> HTTPDataTaskRetryDecision) {
         self.retryClosure = retryClosure
     }
     
@@ -25,9 +23,9 @@ struct HTTPClosureRetrier: HTTPDataTaskRetrier {
 
 // MARK: Publisher + HTTPClosureAdapter
 
-extension Publisher where Self: HTTPDataTaskDemandable, Output == (data: Data, response: HTTPURLResponse), Failure == HTTPURLError {
+extension Publisher where Self: HTTPDataTaskDemandable, Output == HTTPURLResponseOutput, Failure == HTTPURLError {
     
-    public func retryDecision(for retrier: @escaping (HTTPURLError) async throws -> HTTPDataTaskRetryDecision) -> URLSession.HTTPRetry<Self> {
+    public func retryDecision(for retrier: @Sendable @escaping (HTTPURLError) async throws -> HTTPDataTaskRetryDecision) -> URLSession.HTTPRetry<Self> {
         retrying(using: HTTPClosureRetrier(retrier))
     }
     

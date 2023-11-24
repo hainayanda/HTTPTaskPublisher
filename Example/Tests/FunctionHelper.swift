@@ -11,8 +11,8 @@ import Nimble
 import Combine
 @testable import HTTPTaskPublisher
 
-func waitForResponse<P: Publisher>(to publisher: P) throws -> Result<(data: Data, response: URLResponse), HTTPURLError> where P.Output == (data: Data, response: HTTPURLResponse), P.Failure == HTTPURLError {
-    var result: Result<(data: Data, response: URLResponse), HTTPURLError>?
+func waitForResponse<P: Publisher>(to publisher: P) throws -> Result<URLResponseOutput, HTTPURLError> where P.Output == HTTPURLResponseOutput, P.Failure == HTTPURLError {
+    var result: Result<URLResponseOutput, HTTPURLError>?
     var cancellable: AnyCancellable?
     waitUntil { done in
         cancellable = publisher.sink { completion in

@@ -10,10 +10,11 @@ import Combine
 
 extension URLSession {
     
-    public class HTTPValid<Upstream: Publisher & HTTPDataTaskDemandable>: HTTPDataTaskSubscribable, Publisher, Subscriber where Upstream.Output == (data: Data, response: HTTPURLResponse), Upstream.Failure == HTTPURLError {
+    public class HTTPValid<Upstream: Publisher & HTTPDataTaskDemandable>: HTTPDataTaskSubscribable, Publisher, Subscriber 
+    where Upstream.Output == HTTPURLResponseOutput, Upstream.Failure == HTTPURLError {
         
-        public typealias Input = (data: Data, response: HTTPURLResponse)
-        public typealias Output = (data: Data, response: HTTPURLResponse)
+        public typealias Input = HTTPURLResponseOutput
+        public typealias Output = HTTPURLResponseOutput
         public typealias Failure = HTTPURLError
         
         let validator: HTTPDataTaskValidator
@@ -27,7 +28,7 @@ extension URLSession {
             upstream.subscribe(self)
         }
         
-        public func receive<S>(subscriber: S) where S : Subscriber, Upstream.Failure == S.Failure, (data: Data, response: HTTPURLResponse) == S.Input {
+        public func receive<S>(subscriber: S) where S: Subscriber, Upstream.Failure == S.Failure, HTTPURLResponseOutput == S.Input {
             let subscription = HTTPDataTaskSubscription(publisher: self, subscriber: subscriber)
             subscriber.receive(subscription: subscription)
         }
@@ -47,7 +48,7 @@ extension URLSession {
             }
         }
         
-        public func receive(_ input: (data: Data, response: HTTPURLResponse)) -> Subscribers.Demand {
+        public func receive(_ input: HTTPURLResponseOutput) -> Subscribers.Demand {
             isWaitingUpstream = false
             let validation = validator.httpDataTaskIsValid(for: input.data, response: input.response)
             switch validation {
@@ -77,7 +78,7 @@ extension URLSession {
 
 // MARK: Publisher + Extensions
 
-extension Publisher where Self: HTTPDataTaskDemandable, Output == (data: Data, response: HTTPURLResponse), Failure == HTTPURLError {
+extension Publisher where Self: HTTPDataTaskDemandable, Output == HTTPURLResponseOutput, Failure == HTTPURLError {
     
     public func validate(using validator: HTTPDataTaskValidator) -> URLSession.HTTPValid<Self> {
         URLSession.HTTPValid(upstream: self, validator: validator)

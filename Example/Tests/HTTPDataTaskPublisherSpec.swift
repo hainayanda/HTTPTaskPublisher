@@ -13,6 +13,7 @@ import Combine
 @testable import HTTPTaskPublisher
 
 class HTTPDataTaskPublisherSpec: QuickSpec {
+    // swiftlint:disable function_body_length
     override class func spec() {
         var factory: DataTaskFactoryMock!
         var publisher: URLSession.HTTPDataTaskPublisher!
@@ -79,12 +80,13 @@ class HTTPDataTaskPublisherSpec: QuickSpec {
             }
         }
     }
+    // swiftlint:enable function_body_length
 }
 
 // MARK: Test
 
-private func sendRequest(using publisher: URLSession.HTTPDataTaskPublisher) throws -> Result<(data: Data, response: URLResponse), HTTPURLError> {
-    var result: Result<(data: Data, response: URLResponse), HTTPURLError>?
+private func sendRequest(using publisher: URLSession.HTTPDataTaskPublisher) throws -> Result<URLResponseOutput, HTTPURLError> {
+    var result: Result<URLResponseOutput, HTTPURLError>?
     var cancellable: AnyCancellable?
     waitUntil { done in
         cancellable = publisher.sink { completion in
@@ -109,7 +111,7 @@ private func sendRequest(using publisher: URLSession.HTTPDataTaskPublisher) thro
 
 // MARK: Expectation
 
-private func expectToBeDefaultSuccess(for result: Result<(data: Data, response: URLResponse), HTTPURLError>) {
+private func expectToBeDefaultSuccess(for result: Result<URLResponseOutput, HTTPURLError>) {
     switch result {
     case .success:
         return
@@ -118,7 +120,7 @@ private func expectToBeDefaultSuccess(for result: Result<(data: Data, response: 
     }
 }
 
-private func expectToBeDefaultError(for result: Result<(data: Data, response: URLResponse), HTTPURLError>) {
+private func expectToBeDefaultError(for result: Result<URLResponseOutput, HTTPURLError>) {
     switch result {
     case .success:
         fail("result should fail")
@@ -131,12 +133,12 @@ private func expectToBeDefaultError(for result: Result<(data: Data, response: UR
     }
 }
 
-private func expectToBeExpectedError(for result: Result<(data: Data, response: URLResponse), HTTPURLError>) {
+private func expectToBeExpectedError(for result: Result<URLResponseOutput, HTTPURLError>) {
     switch result {
     case .success:
         fail("result should fail")
     case .failure(let error):
-        guard case .failWhileAdapt(_, _) = error else {
+        guard case .failWhileAdapt = error else {
             fail("result should produce expected error but produce \(String(describing: error))")
             return
         }

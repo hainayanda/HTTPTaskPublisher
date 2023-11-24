@@ -86,7 +86,7 @@ class HTTPRetrySpec: QuickSpec {
 
 // MARK: Expectation
 
-private func expectToBeDefaultSuccess(for result: Result<(data: Data, response: URLResponse), HTTPURLError>) {
+private func expectToBeDefaultSuccess(for result: Result<URLResponseOutput, HTTPURLError>) {
     switch result {
     case .success:
         return
@@ -95,7 +95,7 @@ private func expectToBeDefaultSuccess(for result: Result<(data: Data, response: 
     }
 }
 
-private func expectToBeWhileRetryError(for result: Result<(data: Data, response: URLResponse), HTTPURLError>) {
+private func expectToBeWhileRetryError(for result: Result<URLResponseOutput, HTTPURLError>) {
     switch result {
     case .success:
         fail("result should fail")
@@ -111,7 +111,7 @@ private func expectToBeWhileRetryError(for result: Result<(data: Data, response:
     }
 }
 
-private func expectToBeToRetryError(for result: Result<(data: Data, response: URLResponse), HTTPURLError>) {
+private func expectToBeToRetryError(for result: Result<URLResponseOutput, HTTPURLError>) {
     switch result {
     case .success:
         fail("result should fail")
@@ -124,7 +124,7 @@ private func expectToBeToRetryError(for result: Result<(data: Data, response: UR
     }
 }
 
-private func expectToBeExpectedError(for result: Result<(data: Data, response: URLResponse), HTTPURLError>) {
+private func expectToBeExpectedError(for result: Result<URLResponseOutput, HTTPURLError>) {
     switch result {
     case .success:
         fail("result should fail")
@@ -139,7 +139,6 @@ private func expectToBeExpectedError(for result: Result<(data: Data, response: U
 }
 
 private class MockRetrier: HTTPDataTaskRetrier {
-    
     
     var decision: HTTPDataTaskRetryDecision = .drop
     var called: Bool { calledCount > 1 }

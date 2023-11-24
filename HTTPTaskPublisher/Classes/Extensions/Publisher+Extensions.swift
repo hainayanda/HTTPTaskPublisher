@@ -8,9 +8,11 @@
 import Foundation
 import Combine
 
-extension Publisher where Output == (data: Data, response: URLResponse), Failure == URLError {
+public typealias HTTPURLResponseOutput = (data: Data, response: HTTPURLResponse)
+
+extension Publisher where Output == URLResponseOutput, Failure == URLError {
     
-    func httpResponseOnly() -> AnyPublisher<(data: Data, response: HTTPURLResponse), HTTPURLError> {
+    func httpResponseOnly() -> AnyPublisher<HTTPURLResponseOutput, HTTPURLError> {
         tryMap { output in
             guard let response = output.response as? HTTPURLResponse else {
                 throw HTTPURLError.expectHTTPResponse(data: output.data, response: output.response)

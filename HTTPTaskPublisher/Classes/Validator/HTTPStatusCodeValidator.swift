@@ -14,10 +14,6 @@ struct HTTPStatusCodeValidator: HTTPDataTaskValidator {
     
     let allowedStatusCodes: [Int]
     
-    init(allowedStatusCodes: [Int]) {
-        self.allowedStatusCodes = allowedStatusCodes
-    }
-    
     func httpDataTaskIsValid(for data: Data, response: HTTPURLResponse) -> HTTPDataTaskValidation {
         allowedStatusCodes.contains(response.statusCode)
         ? .valid
@@ -27,7 +23,7 @@ struct HTTPStatusCodeValidator: HTTPDataTaskValidator {
 
 // MARK: Publisher + HTTPStatusCodeValidator
 
-extension Publisher where Self: HTTPDataTaskDemandable, Output == (data: Data, response: HTTPURLResponse), Failure == HTTPURLError {
+extension Publisher where Self: HTTPDataTaskDemandable, Output == HTTPURLResponseOutput, Failure == HTTPURLError {
     
     public func allowed(statusCodes: [Int]) -> URLSession.HTTPValid<Self> {
         validate(using: HTTPStatusCodeValidator(allowedStatusCodes: statusCodes))

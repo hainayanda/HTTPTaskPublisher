@@ -23,7 +23,7 @@ public enum DuplicationHandling {
     case dropIfDuplicated
 }
 
-private var ongoingRequestKey: String = "ongoingRequestKey"
+private var ongoingRequestKey: UnsafeMutableRawPointer = malloc(1)
 
 extension URLSession: DataTaskPublisherFactory {
     

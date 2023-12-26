@@ -8,8 +8,6 @@
 import Foundation
 import Combine
 
-public typealias HTTPURLResponseOutput = (data: Data, response: HTTPURLResponse)
-
 extension Publisher where Output == URLResponseOutput, Failure == URLError {
     
     func httpResponseOnly() -> AnyPublisher<HTTPURLResponseOutput, HTTPURLError> {

@@ -61,6 +61,7 @@
 		596CDFF67332819708FDEE18D7A31191 /* ExpectationMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F60C2FF37884B6C7A9A8BB252EE427 /* ExpectationMessage.swift */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble"; }; };
 		5A817FC0FB5A5BECB78D5C3A259244A0 /* Contain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 533554313B24F9AF1940AC9C29012AD2 /* Contain.swift */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble"; }; };
 		5C751C256B45207844692EEEECD94ECA /* MatcherProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0196E24D8935E06F087E0F9A6A5129FA /* MatcherProtocols.swift */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble"; }; };
+		5CBBBB569AD58356A24BD913A57211BB /* WeakFutureWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5202A550E48EC1EFDA762EDCEC1712B0 /* WeakFutureWrapper.swift */; };
 		5E41035BB69F98AB59FDB48C982FAC6F /* ThrowAssertion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A709700E1DD9579DB1DA1A54220AE7 /* ThrowAssertion.swift */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble"; }; };
 		5E73B117C52745BC1C828DB6ADAFFBAB /* RaisesException.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEEF04C1CB77F324C07376EE6DE7F664 /* RaisesException.swift */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble"; }; };
 		6067B65A76A4408240F1ED039F790B57 /* BeLessThanOrEqual.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C806B272A76E0B7AE77511D8133D77 /* BeLessThanOrEqual.swift */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble"; }; };
@@ -99,6 +100,7 @@
 		8B0E84A4703371EC91DF2114684F3E83 /* Expression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01631F8BD7BC2E74F58999076A33038A /* Expression.swift */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble"; }; };
 		8D8D64EEEDF9AB78505B7818A6EDB6B3 /* AssertionRecorder+Async.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F15F814092FC742817B608E259161C7 /* AssertionRecorder+Async.swift */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble"; }; };
 		8E522EB56AE7553C05A40A5635DAEA0D /* Nimble.h in Headers */ = {isa = PBXBuildFile; fileRef = 5FE7424E26CCD86005FE60089D4FDC97 /* Nimble.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		8F70A64DB05CC85EEAA367A81B3BFCCE /* AtomicSubscribeable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4934CFB5FD0DCA216743BE7E0A1DF339 /* AtomicSubscribeable.swift */; };
 		90154BF6F31AD650D0098079B8C5AB70 /* DSL.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DCFEDADA66F0CC7C25D8E7D7064D979 /* DSL.m */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble"; }; };
 		90654A2B37774172FF25B825A2F61566 /* AsyncExample.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D57B90B38B4FA1FB7D0D8DFBC836F32 /* AsyncExample.swift */; };
 		947F70458351453D802B44D3FE861CF1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CA8B94E9D3B433157168D1EECCEC11CD /* Foundation.framework */; };
@@ -248,8 +250,10 @@
 		488219D7838471AE847A10829D57CD5E /* Quick-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Quick-prefix.pch"; sourceTree = "<group>"; };
 		48AE77C11C58F9E84F74F205411AF01A /* Nimble.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = Nimble.modulemap; sourceTree = "<group>"; };
 		48CDA9DAAAD829D39E312C07B9155EC7 /* Callsite.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Callsite.swift; path = Sources/Quick/Callsite.swift; sourceTree = "<group>"; };
+		4934CFB5FD0DCA216743BE7E0A1DF339 /* AtomicSubscribeable.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AtomicSubscribeable.swift; sourceTree = "<group>"; };
 		4D755E88ED8BD74506F75AD0B2BB1950 /* AssertionRecorder.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AssertionRecorder.swift; path = Sources/Nimble/Adapters/AssertionRecorder.swift; sourceTree = "<group>"; };
 		4F6F72A4986AB02EF0C614C06135BB6D /* AsyncExampleGroup.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AsyncExampleGroup.swift; path = Sources/Quick/Async/AsyncExampleGroup.swift; sourceTree = "<group>"; };
+		5202A550E48EC1EFDA762EDCEC1712B0 /* WeakFutureWrapper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WeakFutureWrapper.swift; sourceTree = "<group>"; };
 		525C7AE2A26C2D8EDC368AAC28726D94 /* ElementsEqual.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ElementsEqual.swift; path = Sources/Nimble/Matchers/ElementsEqual.swift; sourceTree = "<group>"; };
 		5269DDCB00E147E7001A5FD7F2C08B07 /* AllPass.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AllPass.swift; path = Sources/Nimble/Matchers/AllPass.swift; sourceTree = "<group>"; };
 		526B286B021BC349F0BCE631F2DBF21E /* ExampleHooks.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExampleHooks.swift; path = Sources/Quick/Hooks/ExampleHooks.swift; sourceTree = "<group>"; };
@@ -613,8 +617,10 @@
 		AEEBB7B2E9C24056227E55C61EA1EE35 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				4934CFB5FD0DCA216743BE7E0A1DF339 /* AtomicSubscribeable.swift */,
 				7EA6CD6FEE48B5DBD91AC7F9586F096A /* DuplicationHandling.swift */,
 				23440C1637C14EDA6B75E601187DAC17 /* HTTPURLError.swift */,
+				5202A550E48EC1EFDA762EDCEC1712B0 /* WeakFutureWrapper.swift */,
 			);
 			name = Models;
 			path = HTTPTaskPublisher/Classes/Models;
@@ -1107,6 +1113,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8F70A64DB05CC85EEAA367A81B3BFCCE /* AtomicSubscribeable.swift in Sources */,
 				041870CF9D82C8C0EEAB1E625C6AAB17 /* DataTaskPublisherFactory.swift in Sources */,
 				FDF35C0FA0AA54C2C7D78130583084FD /* DuplicationHandling.swift in Sources */,
 				70B38FCCD8947811F5D4310916A4D970 /* HTTPClosureRetrier.swift in Sources */,
@@ -1122,6 +1129,7 @@
 				6893CE1DE5AB68633B17694291F50101 /* HTTPValid.swift in Sources */,
 				9C62E9BDCF43308816C550C9358E7E03 /* Publisher+Extensions.swift in Sources */,
 				7FCA4A1919D3EB6467D3C7FFCF2450A1 /* URLSession+Extensions.swift in Sources */,
+				5CBBBB569AD58356A24BD913A57211BB /* WeakFutureWrapper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -18,48 +18,13 @@ public protocol HTTPDataTaskDemandable: AnyObject {
     func demandOutput(from receiver: HTTPDataTaskReceiver)
 }
 
-protocol HTTPDataTaskSubscribable: HTTPDataTaskDemandable {
-    var atomicQueue: DispatchQueue { get }
-    var subscribers: [CombineIdentifier: HTTPDataTaskReceiver] { get set }
-}
-
-extension HTTPDataTaskSubscribable {
-    
-    func dequeueSubscriber(with data: Data, response: HTTPURLResponse) {
-        atomicQueue.sync(flags: .barrier) {
-            let subscribers = self.subscribers.values
-            self.subscribers = [:]
-            subscribers.forEach { subscriber in
-                subscriber.acceptResponse(data: data, response: response)
-                subscriber.acceptTermination()
-            }
-        }
-    }
-    
-    func dequeueSubscriber(with error: HTTPURLError) {
-        atomicQueue.sync(flags: .barrier) {
-            let subscribers = self.subscribers.values
-            self.subscribers = [:]
-            subscribers.forEach { subscriber in
-                subscriber.acceptError(error: error)
-            }
-        }
-    }
-    
-    func terminateAllSubscribers() {
-        atomicQueue.sync(flags: .barrier) {
-            let subscribers = self.subscribers.values
-            self.subscribers = [:]
-            subscribers.forEach { subscriber in
-                subscriber.acceptTermination()
-            }
-        }
-    }
-}
+public typealias HTTPURLResponseOutput = (data: Data, response: HTTPURLResponse)
 
 extension URLSession {
     
-    public class HTTPDataTaskPublisher: Publisher, HTTPDataTaskSubscribable {
+    public typealias HTTPURLResponseOutput = (data: Data, response: HTTPURLResponse)
+    
+    public class HTTPDataTaskPublisher: Publisher, AtomicSubscribeable, HTTPDataTaskDemandable {
         
         public typealias Output = HTTPURLResponseOutput
         public typealias Failure = HTTPURLError
@@ -70,7 +35,7 @@ extension URLSession {
         let atomicQueue: DispatchQueue = .init(label: UUID().uuidString, qos: .background)
         var urlRequest: URLRequest
         weak var ongoingRequest: AnyCancellable?
-        var subscribers: [CombineIdentifier: HTTPDataTaskReceiver] = [:]
+        var subscribers: [CombineIdentifier: CustomCombineIdentifierConvertible] = [:]
         
         init(dataTaskFactory: DataTaskPublisherFactory, urlRequest: URLRequest, adapter: HTTPDataTaskAdapter?, duplicationHandling: DuplicationHandling) {
             self.dataTaskFactory = dataTaskFactory
@@ -155,6 +120,28 @@ extension URLSession {
         func acceptTermination() {
             guard let subscriber else { return }
             subscriber.receive(completion: .finished)
+        }
+    }
+}
+
+private extension AtomicSubscribeable {
+    
+    func dequeueSubscriber(with data: Data, response: HTTPURLResponse) {
+        dequeueAllSubscriber(tryCastTo: HTTPDataTaskReceiver.self) { subscriber in
+            subscriber.acceptResponse(data: data, response: response)
+            subscriber.acceptTermination()
+        }
+    }
+    
+    func dequeueSubscriber(with error: HTTPURLError) {
+        dequeueAllSubscriber(tryCastTo: HTTPDataTaskReceiver.self) { subscriber in
+            subscriber.acceptError(error: error)
+        }
+    }
+    
+    func terminateAllSubscribers() {
+        dequeueAllSubscriber(tryCastTo: HTTPDataTaskReceiver.self) { subscriber in
+            subscriber.acceptTermination()
         }
     }
 }

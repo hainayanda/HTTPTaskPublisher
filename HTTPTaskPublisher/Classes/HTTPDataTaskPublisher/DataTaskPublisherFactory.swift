@@ -14,22 +14,15 @@ public protocol DataTaskPublisherFactory {
     func anyDataTaskPublisher(for request: URLRequest, duplicationHandling: DuplicationHandling) -> Future<URLResponseOutput, URLError>
 }
 
-public enum DuplicationHandling {
-    /// always create a new data task request no matter what
-    case alwaysCreateNew
-    /// subscribe to the current ongoing identical task if have any, otherwise, create a new data task
-    case useCurrentIfPossible
-    /// cancel the request if there is an ongoing identical task, otherwise, create a new data task
-    case dropIfDuplicated
-}
-
 private var ongoingRequestKey: UnsafeMutableRawPointer = malloc(1)
 
 extension URLSession: DataTaskPublisherFactory {
     
-    private var ongoingRequest: [URLRequest: WeakFutureWrapper] {
+    private typealias WeakRequestWrapper = WeakFutureWrapper<URLResponseOutput, URLError>
+    
+    private var ongoingRequest: [URLRequest: WeakRequestWrapper] {
         get {
-            objc_getAssociatedObject(self, &ongoingRequestKey) as? [URLRequest: WeakFutureWrapper] ?? [:]
+            objc_getAssociatedObject(self, &ongoingRequestKey) as? [URLRequest: WeakRequestWrapper] ?? [:]
         }
         set {
             objc_setAssociatedObject(self, &ongoingRequestKey, newValue, .OBJC_ASSOCIATION_RETAIN)
@@ -74,14 +67,6 @@ extension URLSession: DataTaskPublisherFactory {
         }
         ongoingRequest[request] = WeakFutureWrapper(future: future)
         return future
-    }
-}
-
-struct WeakFutureWrapper {
-    weak var future: Future<URLResponseOutput, URLError>?
-    
-    init(future: Future<URLResponseOutput, URLError>? = nil) {
-        self.future = future
     }
 }
 

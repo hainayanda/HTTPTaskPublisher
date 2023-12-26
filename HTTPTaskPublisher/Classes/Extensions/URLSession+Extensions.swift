@@ -13,4 +13,11 @@ extension URLSession {
         HTTPDataTaskPublisher(dataTaskFactory: self, urlRequest: urlRequest, adapter: adapter, duplicationHandling: handle)
     }
     
+    public func downloadTaskPublisher(for urlRequest: URLRequest, adapter: HTTPDataTaskAdapter? = nil, whenDuplicated handle: DuplicationHandling = .alwaysCreateNew) -> URLDownloadTaskPublisher {
+        URLDownloadTaskPublisher(downloadTaskFactory: self, downloadRequest: .urlRequest(urlRequest), adapter: adapter, duplicationHandling: handle)
+    }
+    
+    public func downloadTaskPublisher(with resumeData: Data, adapter: HTTPDataTaskAdapter? = nil, whenDuplicated handle: DuplicationHandling = .alwaysCreateNew) -> URLDownloadTaskPublisher {
+        URLDownloadTaskPublisher(downloadTaskFactory: self, downloadRequest: .resumeData(resumeData), adapter: adapter, duplicationHandling: handle)
+    }
 }

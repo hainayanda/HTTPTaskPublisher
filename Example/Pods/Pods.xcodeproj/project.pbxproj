@@ -109,6 +109,7 @@
 		9C62E9BDCF43308816C550C9358E7E03 /* Publisher+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70DB4EBC2E08C21AF8C53F18072E2975 /* Publisher+Extensions.swift */; };
 		9DC482BBCCB741FD62F83B5EEDF1FC68 /* SourceLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20E9FD222F096DB0DEC9BA8F0927384 /* SourceLocation.swift */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble"; }; };
 		9F50AAAB0F141B46B37463EEDAA5767A /* ExampleHooks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526B286B021BC349F0BCE631F2DBF21E /* ExampleHooks.swift */; };
+		A03FCBF864EAFC45317C72FF4330ACF3 /* URLDownloadTaskPublisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = E49EDF442DBE49561956A911EC4DF001 /* URLDownloadTaskPublisher.swift */; };
 		A0B4B2CCB9E2399A35170C89CBB016DB /* CwlCatchException.swift in Sources */ = {isa = PBXBuildFile; fileRef = A42A4CC301BBE7D16CE21140644E81DD /* CwlCatchException.swift */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble"; }; };
 		A205111757F2008CE05125EAB7389408 /* QCKDSL.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C283724F745886A0EA3D270F28DBEEA /* QCKDSL.m */; };
 		A4237087AE530F3A394DDED97F7EA828 /* FailureMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 454288D518677177D5C37407DCCE1AD6 /* FailureMessage.swift */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble"; }; };
@@ -373,6 +374,7 @@
 		E16A15D6F87987B383A9D20D8AB07250 /* BeIdenticalTo.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BeIdenticalTo.swift; path = Sources/Nimble/Matchers/BeIdenticalTo.swift; sourceTree = "<group>"; };
 		E2773619ED567762AA90EF1339B248FB /* HTTPTaskPublisher-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "HTTPTaskPublisher-prefix.pch"; sourceTree = "<group>"; };
 		E3AFD35701FA9BE057A894CC3111061D /* ExampleMetadata.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExampleMetadata.swift; path = Sources/Quick/Examples/ExampleMetadata.swift; sourceTree = "<group>"; };
+		E49EDF442DBE49561956A911EC4DF001 /* URLDownloadTaskPublisher.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = URLDownloadTaskPublisher.swift; sourceTree = "<group>"; };
 		E5B4EB42FFE7ABD8CA67DB9BA5C847AB /* Quick.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Quick.debug.xcconfig; sourceTree = "<group>"; };
 		E600E848692A3DF11A16184F0B2CF23B /* CwlMachBadInstructionHandler.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = CwlMachBadInstructionHandler.m; path = Carthage/Checkouts/CwlPreconditionTesting/Sources/CwlMachBadInstructionHandler/CwlMachBadInstructionHandler.m; sourceTree = "<group>"; };
 		E64DD0AF62AB9BD4E745AB74FE55B68C /* BeGreaterThan.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BeGreaterThan.swift; path = Sources/Nimble/Matchers/BeGreaterThan.swift; sourceTree = "<group>"; };
@@ -497,6 +499,7 @@
 				65B3EC6B5BF11C5E0120FE371BE4F8D2 /* Pod */,
 				D293B58AAE72B09156C0BAE614736547 /* Retrier */,
 				345E9388787E176EF473F8EC20151A16 /* Support Files */,
+				EBE06642E0938CA7FAA826EC93BC5FC4 /* URLDownloadTaskPublisher */,
 				1436BD7B7B27257C47CB71906A86B8C1 /* Validator */,
 			);
 			name = HTTPTaskPublisher;
@@ -790,6 +793,7 @@
 			isa = PBXGroup;
 			children = (
 				AEE493F5F480E4F7ABB6E94E76A40EE8 /* DownloadTaskPublisherFactory.swift */,
+				E49EDF442DBE49561956A911EC4DF001 /* URLDownloadTaskPublisher.swift */,
 			);
 			name = URLDownloadTaskPublisher;
 			path = HTTPTaskPublisher/Classes/URLDownloadTaskPublisher;
@@ -1144,6 +1148,7 @@
 				092D19617FBC0204E403956DD997352E /* HTTPURLError.swift in Sources */,
 				6893CE1DE5AB68633B17694291F50101 /* HTTPValid.swift in Sources */,
 				9C62E9BDCF43308816C550C9358E7E03 /* Publisher+Extensions.swift in Sources */,
+				A03FCBF864EAFC45317C72FF4330ACF3 /* URLDownloadTaskPublisher.swift in Sources */,
 				7FCA4A1919D3EB6467D3C7FFCF2450A1 /* URLSession+Extensions.swift in Sources */,
 				5CBBBB569AD58356A24BD913A57211BB /* WeakFutureWrapper.swift in Sources */,
 			);

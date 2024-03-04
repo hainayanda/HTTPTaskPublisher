@@ -10,7 +10,7 @@ import Combine
 
 extension URLSession {
     
-    public class HTTPValid<Upstream: Publisher & HTTPDataTaskDemandable>: HTTPDataTaskSubscribable, Publisher, Subscriber 
+    public class HTTPValid<Upstream: Publisher & HTTPDataTaskDemandable>: HTTPDataTaskSubscribable, Publisher, Subscriber
     where Upstream.Output == HTTPURLResponseOutput, Upstream.Failure == HTTPURLError {
         
         public typealias Input = HTTPURLResponseOutput
@@ -18,10 +18,9 @@ extension URLSession {
         public typealias Failure = HTTPURLError
         
         let validator: HTTPDataTaskValidator
-        let atomicQueue: DispatchQueue = .init(label: UUID().uuidString, qos: .background)
-        var subscription: Subscription?
-        var subscribers: [CombineIdentifier: HTTPDataTaskReceiver] = [:]
-        var isWaitingUpstream: Bool = false
+        @HTTPDataTaskActor var subscription: Subscription?
+        @HTTPDataTaskActor var subscribers: [CombineIdentifier: HTTPDataTaskReceiver] = [:]
+        @HTTPDataTaskActor var isWaitingUpstream: Bool = false
         
         init(upstream: Upstream, validator: HTTPDataTaskValidator) {
             self.validator = validator
@@ -34,39 +33,45 @@ extension URLSession {
         }
         
         public func receive(subscription: Subscription) {
-            self.subscription = subscription
-            demandToUpstreamIfNeeded()
+            Task { @HTTPDataTaskActor in
+                self.subscription = subscription
+                demandToUpstreamIfNeeded()
+            }
         }
         
         public func receive(completion: Subscribers.Completion<Failure>) {
-            isWaitingUpstream = false
-            switch completion {
-            case .finished:
-                terminateAllSubscribers()
-            case .failure(let failure):
-                dequeueSubscriber(with: failure)
+            Task { @HTTPDataTaskActor in
+                isWaitingUpstream = false
+                switch completion {
+                case .finished:
+                    terminateAllSubscribers()
+                case .failure(let failure):
+                    dequeueSubscriber(with: failure)
+                }
             }
         }
         
         public func receive(_ input: HTTPURLResponseOutput) -> Subscribers.Demand {
-            isWaitingUpstream = false
-            let validation = validator.httpDataTaskIsValid(for: input.data, response: input.response)
-            switch validation {
-            case .valid:
-                dequeueSubscriber(with: input.data, response: input.response)
-            case .invalid(let reason):
-                dequeueSubscriber(with: HTTPURLError.failValidation(reason: reason, data: input.data, response: input.response))
+            Task { @HTTPDataTaskActor in
+                isWaitingUpstream = false
+                let validation = validator.httpDataTaskIsValid(for: input.data, response: input.response)
+                switch validation {
+                case .valid:
+                    dequeueSubscriber(with: input.data, response: input.response)
+                case .invalid(let reason):
+                    dequeueSubscriber(with: HTTPURLError.failValidation(reason: reason, data: input.data, response: input.response))
+                }
             }
             return .none
         }
         
+        @HTTPDataTaskActor
         public func demandOutput(from receiver: HTTPDataTaskReceiver) {
-            atomicQueue.sync(flags: .barrier) {
-                subscribers[receiver.combineIdentifier] = receiver
-            }
+            subscribers[receiver.combineIdentifier] = receiver
             demandToUpstreamIfNeeded()
         }
         
+        @HTTPDataTaskActor
         func demandToUpstreamIfNeeded() {
             guard !isWaitingUpstream, let subscription else {
                 return

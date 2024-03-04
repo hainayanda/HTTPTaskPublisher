@@ -8,6 +8,10 @@
 import Foundation
 import Combine
 
+@globalActor actor HTTPDataTaskActor {
+    static let shared = HTTPDataTaskActor()
+}
+
 public protocol HTTPDataTaskReceiver: CustomCombineIdentifierConvertible {
     func acceptResponse(data: Data, response: HTTPURLResponse)
     func acceptError(error: HTTPURLError)
@@ -19,40 +23,36 @@ public protocol HTTPDataTaskDemandable: AnyObject {
 }
 
 protocol HTTPDataTaskSubscribable: HTTPDataTaskDemandable {
-    var atomicQueue: DispatchQueue { get }
     var subscribers: [CombineIdentifier: HTTPDataTaskReceiver] { get set }
 }
 
 extension HTTPDataTaskSubscribable {
     
+    @HTTPDataTaskActor
     func dequeueSubscriber(with data: Data, response: HTTPURLResponse) {
-        atomicQueue.sync(flags: .barrier) {
-            let subscribers = self.subscribers.values
-            self.subscribers = [:]
-            subscribers.forEach { subscriber in
-                subscriber.acceptResponse(data: data, response: response)
-                subscriber.acceptTermination()
-            }
+        let subscribers = self.subscribers.values
+        self.subscribers = [:]
+        subscribers.forEach { subscriber in
+            subscriber.acceptResponse(data: data, response: response)
+            subscriber.acceptTermination()
         }
     }
     
+    @HTTPDataTaskActor
     func dequeueSubscriber(with error: HTTPURLError) {
-        atomicQueue.sync(flags: .barrier) {
-            let subscribers = self.subscribers.values
-            self.subscribers = [:]
-            subscribers.forEach { subscriber in
-                subscriber.acceptError(error: error)
-            }
+        let subscribers = self.subscribers.values
+        self.subscribers = [:]
+        subscribers.forEach { subscriber in
+            subscriber.acceptError(error: error)
         }
     }
     
+    @HTTPDataTaskActor
     func terminateAllSubscribers() {
-        atomicQueue.sync(flags: .barrier) {
-            let subscribers = self.subscribers.values
-            self.subscribers = [:]
-            subscribers.forEach { subscriber in
-                subscriber.acceptTermination()
-            }
+        let subscribers = self.subscribers.values
+        self.subscribers = [:]
+        subscribers.forEach { subscriber in
+            subscriber.acceptTermination()
         }
     }
 }
@@ -67,10 +67,10 @@ extension URLSession {
         let dataTaskFactory: DataTaskPublisherFactory
         let duplicationHandling: DuplicationHandling
         let adapter: HTTPDataTaskAdapter?
-        let atomicQueue: DispatchQueue = .init(label: UUID().uuidString, qos: .background)
-        var urlRequest: URLRequest
-        weak var ongoingRequest: AnyCancellable?
-        var subscribers: [CombineIdentifier: HTTPDataTaskReceiver] = [:]
+        
+        @HTTPDataTaskActor var urlRequest: URLRequest
+        @HTTPDataTaskActor weak var ongoingRequest: AnyCancellable?
+        @HTTPDataTaskActor var subscribers: [CombineIdentifier: HTTPDataTaskReceiver] = [:]
         
         init(dataTaskFactory: DataTaskPublisherFactory, urlRequest: URLRequest, adapter: HTTPDataTaskAdapter?, duplicationHandling: DuplicationHandling) {
             self.dataTaskFactory = dataTaskFactory
@@ -85,12 +85,12 @@ extension URLSession {
         }
         
         public func demandOutput(from receiver: HTTPDataTaskReceiver) {
-            subscribers[receiver.combineIdentifier] = receiver
-            guard let adapter else {
-                demandOutput(using: urlRequest)
-                return
-            }
-            Task {
+            Task { @HTTPDataTaskActor in
+                subscribers[receiver.combineIdentifier] = receiver
+                guard let adapter else {
+                    demandOutput(using: urlRequest)
+                    return
+                }
                 do {
                     let adaptedRequest = try await adapter.httpDataTaskAdapt(for: urlRequest)
                     demandOutput(using: adaptedRequest)
@@ -100,7 +100,8 @@ extension URLSession {
             }
         }
         
-        public func demandOutput(using urlRequest: URLRequest) {
+        @HTTPDataTaskActor
+        func demandOutput(using urlRequest: URLRequest) {
             guard ongoingRequest == nil else { return }
             var cancellable: AnyCancellable?
             cancellable = dataTaskFactory

@@ -10,7 +10,7 @@ import Combine
 
 extension URLSession {
     
-    public class HTTPRetry<Upstream: Publisher & HTTPDataTaskDemandable>: HTTPDataTaskSubscribable, Publisher, Subscriber 
+    public class HTTPRetry<Upstream: Publisher & HTTPDataTaskDemandable>: HTTPDataTaskSubscribable, Publisher, Subscriber
     where Upstream.Output == HTTPURLResponseOutput, Upstream.Failure == HTTPURLError {
         
         public typealias Input = HTTPURLResponseOutput
@@ -19,10 +19,10 @@ extension URLSession {
         
         let retrier: HTTPDataTaskRetrier
         let retryDelay: TimeInterval
-        let atomicQueue: DispatchQueue = .init(label: UUID().uuidString, qos: .background)
-        var subscription: Subscription?
-        var subscribers: [CombineIdentifier: HTTPDataTaskReceiver] = [:]
-        var isWaitingUpstream: Bool = false
+        
+        @HTTPDataTaskActor var subscription: Subscription?
+        @HTTPDataTaskActor var subscribers: [CombineIdentifier: HTTPDataTaskReceiver] = [:]
+        @HTTPDataTaskActor var isWaitingUpstream: Bool = false
         
         init(upstream: Upstream, retrier: HTTPDataTaskRetrier, retryDelay: TimeInterval = 0.1) {
             self.retrier = retrier
@@ -40,17 +40,19 @@ extension URLSession {
         // MARK: Subscriber
         
         public func receive(subscription: Subscription) {
-            self.subscription = subscription
-            demandToUpstreamIfNeeded()
+            Task { @HTTPDataTaskActor in
+                self.subscription = subscription
+                demandToUpstreamIfNeeded()
+            }
         }
         
         public func receive(completion: Subscribers.Completion<Failure>) {
-            isWaitingUpstream = false
-            switch completion {
-            case .finished:
-                terminateAllSubscribers()
-            case .failure(let failure):
-                Task {
+            Task { @HTTPDataTaskActor in
+                isWaitingUpstream = false
+                switch completion {
+                case .finished:
+                    terminateAllSubscribers()
+                case .failure(let failure):
                     do {
                         try await tryToRetry(from: failure)
                     } catch {
@@ -61,18 +63,20 @@ extension URLSession {
         }
         
         public func receive(_ input: HTTPURLResponseOutput) -> Subscribers.Demand {
-            isWaitingUpstream = false
-            dequeueSubscriber(with: input.data, response: input.response)
+            Task { @HTTPDataTaskActor in
+                isWaitingUpstream = false
+                dequeueSubscriber(with: input.data, response: input.response)
+            }
             return .none
         }
         
+        @HTTPDataTaskActor
         public func demandOutput(from receiver: HTTPDataTaskReceiver) {
-            atomicQueue.sync(flags: .barrier) {
-                subscribers[receiver.combineIdentifier] = receiver
-            }
+            subscribers[receiver.combineIdentifier] = receiver
             demandToUpstreamIfNeeded()
         }
         
+        @HTTPDataTaskActor
         func tryToRetry(from failure: HTTPURLError) async throws {
             let retryDecision = try await retrier.httpDataTaskShouldRetry(for: failure)
             switch retryDecision {
@@ -86,6 +90,7 @@ extension URLSession {
             }
         }
         
+        @HTTPDataTaskActor
         func demandToUpstreamIfNeeded() {
             guard !isWaitingUpstream, let subscription else {
                 return

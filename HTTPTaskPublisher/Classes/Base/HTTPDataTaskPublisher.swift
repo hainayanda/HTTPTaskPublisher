@@ -101,7 +101,7 @@ extension URLSession {
         }
         
         @HTTPDataTaskActor
-        public func demandOutput(using urlRequest: URLRequest) {
+        func demandOutput(using urlRequest: URLRequest) {
             guard ongoingRequest == nil else { return }
             var cancellable: AnyCancellable?
             cancellable = dataTaskFactory

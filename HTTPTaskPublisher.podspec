@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'HTTPTaskPublisher'
-  s.version          = '2.0.1'
+  s.version          = '2.1.0'
   s.summary          = 'Swift Publisher for HTTP request'
 
 # This description is used to generate tags and improve search results.

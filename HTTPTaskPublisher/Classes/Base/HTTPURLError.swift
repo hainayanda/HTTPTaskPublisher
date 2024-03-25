@@ -9,8 +9,8 @@ import Foundation
 import Combine
 
 public indirect enum HTTPURLError: Error {
-    case failWhileRetry(error: Error, orignalError: HTTPURLError)
-    case failToRetry(reason: String, orignalError: HTTPURLError)
+    case failWhileRetry(error: Error, originalError: HTTPURLError)
+    case failToRetry(reason: String, originalError: HTTPURLError)
     case failWhileAdapt(request: URLRequest, originalError: Error)
     case failDecode(data: Data, response: HTTPURLResponse, decodeError: Error)
     case failValidation(reason: String, data: Data, response: HTTPURLResponse)

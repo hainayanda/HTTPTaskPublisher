@@ -9,14 +9,37 @@ import Foundation
 import Combine
 
 public indirect enum HTTPURLError: Error {
-    case failWhileRetry(error: Error, orignalError: HTTPURLError)
-    case failToRetry(reason: String, orignalError: HTTPURLError)
+    case failWhileRetry(error: Error, originalError: HTTPURLError)
+    case failToRetry(reason: String, originalError: HTTPURLError)
     case failWhileAdapt(request: URLRequest, originalError: Error)
     case failDecode(data: Data, response: HTTPURLResponse, decodeError: Error)
     case failValidation(reason: String, data: Data, response: HTTPURLResponse)
     case expectHTTPResponse(data: Data, response: URLResponse)
     case urlError(URLError)
     case error(Error)
+}
+
+extension HTTPURLError: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .failWhileRetry(let error, let originalError):
+            return "HTTPTaskPublisher fail while retrying with statusCode: \(statusCode ?? -1), error: \(error)\nOriginal Error: \(originalError)"
+        case .failToRetry(let reason, let originalError):
+            return "HTTPTaskPublisher fail to retry with statusCode: \(statusCode ?? -1), reason: \(reason)\nOriginal Error: \(originalError)"
+        case .failWhileAdapt(let request, let originalError):
+            return "HTTPTaskPublisher fail while adapting request with statusCode: \(statusCode ?? -1), url: \(request.url?.absoluteString ?? "none")\nOriginal Error: \(originalError)"
+        case .failDecode(_, let response, let decodeError):
+            return "HTTPTaskPublisher fail decoding data from response: \(response.url?.absoluteString ?? "none")\nOriginal Error: \(decodeError)"
+        case .failValidation(let reason, _, let response):
+            return "HTTPTaskPublisher fail validating response with statusCode: \(statusCode ?? -1), url: \(response.url?.absoluteString ?? "none"), reason: \(reason)"
+        case .expectHTTPResponse(_, let response):
+            return "HTTPTaskPublisher fail because response is not http response: \(response.url?.absoluteString ?? "none")"
+        case .urlError(let urlError):
+            return "HTTPTaskPublisher fail with URLError: \(urlError)"
+        case .error(let error):
+            return "HTTPTaskPublisher fail with statusCode: \(statusCode ?? -1), Error: \(error)"
+        }
+    }
 }
 
 extension HTTPURLError {

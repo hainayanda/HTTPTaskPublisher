@@ -56,7 +56,7 @@ extension URLSession {
                     do {
                         try await tryToRetry(from: failure)
                     } catch {
-                        dequeueSubscriber(with: HTTPURLError.failWhileRetry(error: error, orignalError: failure))
+                        dequeueSubscriber(with: HTTPURLError.failWhileRetry(error: error, originalError: failure))
                     }
                 }
             }
@@ -84,7 +84,7 @@ extension URLSession {
                 try? await Task.sleep(nanoseconds: UInt64(retryDelay * 1_000_000_000))
                 subscription?.request(.max(1))
             case .dropWithReason(let reason):
-                dequeueSubscriber(with: HTTPURLError.failToRetry(reason: reason, orignalError: failure))
+                dequeueSubscriber(with: HTTPURLError.failToRetry(reason: reason, originalError: failure))
             case .drop:
                 dequeueSubscriber(with: failure)
             }

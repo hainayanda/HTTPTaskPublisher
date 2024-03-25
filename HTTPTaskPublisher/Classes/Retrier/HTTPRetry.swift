@@ -50,7 +50,7 @@ extension URLSession {
                     return
                 }
                 let retrier = self.retrier
-                Task {
+                Task(priority: .userInitiated) {
                     let retryDecision = try await retrier.httpDataTaskShouldRetry(for: error)
                     switch retryDecision {
                     case .retry:

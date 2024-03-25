@@ -34,14 +34,14 @@ To run the example project, follow these steps:
 To install Swift HTTP Task Publisher via CocoaPods, add the following line to your Podfile:
 
 ```ruby
-pod 'HTTPTaskPublisher', '~> 2.1'
+pod 'HTTPTaskPublisher', '~> 3.0'
 ```
 
 ### Installation with Swift Package Manager (Xcode)
 
 - Go to Xcode menu **File > Swift Package > Add Package Dependency**
 - Add **<https://github.com/hainayanda/HTTPTaskPublisher.git>** as Swift Package URL
-- Set rules to **version**, with the **Up to Next Major** option option and use **2.1.0** as the version.
+- Set rules to **version**, with the **Up to Next Major** option option and use **3.0.0** as the version.
 - Click "Next" and wait for the package to be fetched.
 
 ### Swift Package Manager from Package.swift
@@ -50,7 +50,7 @@ To use `Swift HTTP Task Publisher` as a dependency in your Swift Package Manager
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/hainayanda/HTTPTaskPublisher.git", .upToNextMajor(from: "2.1.0"))
+    .package(url: "https://github.com/hainayanda/HTTPTaskPublisher.git", .upToNextMajor(from: "3.0.0"))
 ]
 ```
 

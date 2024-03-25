@@ -46,7 +46,7 @@ extension URLSession {
             resultSubject.send(completion: completion)
         }
         
-        public func demand(_ resultConsumer: @escaping (Result<HTTPURLResponseOutput, HTTPURLError>) -> Void) -> AnyCancellable {
+        func demand(_ resultConsumer: @escaping (Result<HTTPURLResponseOutput, HTTPURLError>) -> Void) -> AnyCancellable {
             defer {
                 subscription?.request(.max(1))
             }
@@ -66,7 +66,7 @@ extension URLSession {
 
 // MARK: Publisher + Extensions
 
-extension Publisher where Self: HTTPDataTaskDemandable, Output == HTTPURLResponseOutput, Failure == HTTPURLError {
+extension Publisher where Output == HTTPURLResponseOutput, Failure == HTTPURLError {
     
     public func validate(using validator: HTTPDataTaskValidator) -> URLSession.HTTPValid {
         let httpValidator = URLSession.HTTPValid(validator: validator)

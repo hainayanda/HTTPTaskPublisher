@@ -23,7 +23,7 @@ struct HTTPStatusCodeValidator: HTTPDataTaskValidator {
 
 // MARK: Publisher + HTTPStatusCodeValidator
 
-extension Publisher where Self: HTTPDataTaskDemandable, Output == HTTPURLResponseOutput, Failure == HTTPURLError {
+extension Publisher where Output == HTTPURLResponseOutput, Failure == HTTPURLError {
     
     public func allowed(statusCodes: [Int]) -> URLSession.HTTPValid {
         validate(using: HTTPStatusCodeValidator(allowedStatusCodes: statusCodes))

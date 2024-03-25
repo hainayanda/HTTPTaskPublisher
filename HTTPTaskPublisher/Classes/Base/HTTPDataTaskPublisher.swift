@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-public protocol HTTPDataTaskDemandable: AnyObject, Publisher<HTTPURLResponseOutput, HTTPURLError> {
+protocol HTTPDataTaskDemandable: AnyObject, Publisher<HTTPURLResponseOutput, HTTPURLError> {
     func demand(_ resultConsumer: @escaping (Result<Output, HTTPURLError>) -> Void) -> AnyCancellable
 }
 

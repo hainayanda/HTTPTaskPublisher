@@ -65,7 +65,7 @@ extension URLSession {
             }
         }
         
-        public func demand(_ resultConsumer: @escaping (Result<HTTPURLResponseOutput, HTTPURLError>) -> Void) -> AnyCancellable {
+        func demand(_ resultConsumer: @escaping (Result<HTTPURLResponseOutput, HTTPURLError>) -> Void) -> AnyCancellable {
             defer {
                 subscription?.request(.max(1))
             }
@@ -85,7 +85,7 @@ extension URLSession {
 
 // MARK: Publisher + Extensions
 
-extension Publisher where Self: HTTPDataTaskDemandable, Output == HTTPURLResponseOutput, Failure == HTTPURLError {
+extension Publisher where Output == HTTPURLResponseOutput, Failure == HTTPURLError {
     
     public func retrying(using retrier: HTTPDataTaskRetrier, retryDelay: TimeInterval = 0.1) -> URLSession.HTTPRetry {
         let retrier = URLSession.HTTPRetry(retrier: retrier, retryDelay: retryDelay)

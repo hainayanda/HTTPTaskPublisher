@@ -15,7 +15,7 @@ import Combine
 class HTTPValidSpec: QuickSpec {
     override class func spec() {
         var sender: MockablePublisher!
-        var publisher: URLSession.HTTPValid<MockablePublisher>!
+        var publisher: URLSession.HTTPValid!
         var validator: MockValidator!
         beforeEach {
             validator = MockValidator()
@@ -23,7 +23,8 @@ class HTTPValidSpec: QuickSpec {
         context("request is failing") {
             beforeEach {
                 sender = MockablePublisher(.failure(.error(TestError.expectedError)))
-                publisher = .init(upstream: sender, validator: validator)
+                publisher = .init(validator: validator)
+                sender.subscribe(publisher)
             }
             it("valid should never called") {
                 validator.validation = .valid
@@ -45,7 +46,8 @@ class HTTPValidSpec: QuickSpec {
         context("request is succeed") {
             beforeEach {
                 sender = MockablePublisher(.success((data: Data(), response: HTTPURLResponse())))
-                publisher = .init(upstream: sender, validator: validator)
+                publisher = .init(validator: validator)
+                sender.subscribe(publisher)
             }
             it("should adapt with new request") {
                 validator.validation = .valid

@@ -1,5 +1,5 @@
 PODS:
-  - HTTPTaskPublisher (1.1.0)
+  - HTTPTaskPublisher (3.0.0)
   - Nimble (12.0.1)
   - Quick (7.0.2)
 
@@ -18,10 +18,10 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  HTTPTaskPublisher: ddcb1609f7954f8aeddac55ab9e6c6c032e03aeb
+  HTTPTaskPublisher: 0b0b5ceffd833eca3466e227c6e232ccfb772e8d
   Nimble: b279b3ca9e094508778aab5c76417be158d3ad04
   Quick: efab97aca76d60be86c15daa533b2cdfbe1a74d3
 
 PODFILE CHECKSUM: c85be8a50901a7c8a431afcca14cd76662e7656f
 
-COCOAPODS: 1.12.1
+COCOAPODS: 1.15.2

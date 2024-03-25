@@ -8,154 +8,107 @@
 import Foundation
 import Combine
 
-@globalActor actor HTTPDataTaskActor {
-    static let shared = HTTPDataTaskActor()
-}
-
-public protocol HTTPDataTaskReceiver: CustomCombineIdentifierConvertible {
-    func acceptResponse(data: Data, response: HTTPURLResponse)
-    func acceptError(error: HTTPURLError)
-    func acceptTermination()
-}
-
-public protocol HTTPDataTaskDemandable: AnyObject {
-    func demandOutput(from receiver: HTTPDataTaskReceiver)
-}
-
-protocol HTTPDataTaskSubscribable: HTTPDataTaskDemandable {
-    var subscribers: [CombineIdentifier: HTTPDataTaskReceiver] { get set }
-}
-
-extension HTTPDataTaskSubscribable {
-    
-    @HTTPDataTaskActor
-    func dequeueSubscriber(with data: Data, response: HTTPURLResponse) {
-        let subscribers = self.subscribers.values
-        self.subscribers = [:]
-        subscribers.forEach { subscriber in
-            subscriber.acceptResponse(data: data, response: response)
-            subscriber.acceptTermination()
-        }
-    }
-    
-    @HTTPDataTaskActor
-    func dequeueSubscriber(with error: HTTPURLError) {
-        let subscribers = self.subscribers.values
-        self.subscribers = [:]
-        subscribers.forEach { subscriber in
-            subscriber.acceptError(error: error)
-        }
-    }
-    
-    @HTTPDataTaskActor
-    func terminateAllSubscribers() {
-        let subscribers = self.subscribers.values
-        self.subscribers = [:]
-        subscribers.forEach { subscriber in
-            subscriber.acceptTermination()
-        }
-    }
+public protocol HTTPDataTaskDemandable: AnyObject, Publisher<HTTPURLResponseOutput, HTTPURLError> {
+    func demand(_ resultConsumer: @escaping (Result<Output, HTTPURLError>) -> Void) -> AnyCancellable
 }
 
 extension URLSession {
-    
-    public class HTTPDataTaskPublisher: Publisher, HTTPDataTaskSubscribable {
+    public final class HTTPDataTaskPublisher: HTTPDataTaskDemandable {
         
-        public typealias Output = HTTPURLResponseOutput
-        public typealias Failure = HTTPURLError
+        private let dataTaskFactory: DataTaskPublisherFactory
+        private let duplicationHandler: DuplicationHandling
+        private let adapter: HTTPDataTaskAdapter?
+        private let urlRequest: URLRequest
         
-        let dataTaskFactory: DataTaskPublisherFactory
-        let duplicationHandling: DuplicationHandling
-        let adapter: HTTPDataTaskAdapter?
-        
-        @HTTPDataTaskActor var urlRequest: URLRequest
-        @HTTPDataTaskActor weak var ongoingRequest: AnyCancellable?
-        @HTTPDataTaskActor var subscribers: [CombineIdentifier: HTTPDataTaskReceiver] = [:]
-        
-        init(dataTaskFactory: DataTaskPublisherFactory, urlRequest: URLRequest, adapter: HTTPDataTaskAdapter?, duplicationHandling: DuplicationHandling) {
+        init(dataTaskFactory: DataTaskPublisherFactory, urlRequest: URLRequest, adapter: HTTPDataTaskAdapter?, duplicationHandler: DuplicationHandling) {
             self.dataTaskFactory = dataTaskFactory
             self.urlRequest = urlRequest
-            self.duplicationHandling = duplicationHandling
+            self.duplicationHandler = duplicationHandler
             self.adapter = adapter
         }
         
-        public func receive<S>(subscriber: S) where S: Subscriber, S.Failure == HTTPURLError, S.Input == Output {
+        public func receive<S>(subscriber: S) where S: Subscriber, HTTPURLError == S.Failure, HTTPURLResponseOutput == S.Input {
             let subscription = HTTPDataTaskSubscription(publisher: self, subscriber: subscriber)
             subscriber.receive(subscription: subscription)
         }
         
-        public func demandOutput(from receiver: HTTPDataTaskReceiver) {
-            Task { @HTTPDataTaskActor in
-                subscribers[receiver.combineIdentifier] = receiver
-                guard let adapter else {
-                    demandOutput(using: urlRequest)
-                    return
+        public func demand(_ resultConsumer: @escaping (Result<HTTPURLResponseOutput, HTTPURLError>) -> Void) -> AnyCancellable {
+            requestPublisher()
+                .sink { completion in
+                    switch completion {
+                    case .finished:
+                        return
+                    case .failure(let error):
+                        resultConsumer(.failure(error))
+                    }
+                } receiveValue: { response in
+                    resultConsumer(.success(response))
                 }
-                do {
-                    let adaptedRequest = try await adapter.httpDataTaskAdapt(for: urlRequest)
-                    demandOutput(using: adaptedRequest)
-                } catch {
-                    dequeueSubscriber(with: HTTPURLError.failWhileAdapt(request: urlRequest, originalError: error))
+        }
+        
+        private func requestPublisher() -> AnyPublisher<HTTPURLResponseOutput, HTTPURLError> {
+            let originalRequest = self.urlRequest
+            guard let adapter else {
+                return dataTaskFactory
+                    .anyDataTaskPublisher(for: originalRequest, duplicationHandler: duplicationHandler)
+                    .httpResponseOnly()
+                    .eraseToAnyPublisher()
+            }
+            let duplicationHandling = self.duplicationHandler
+            let factory = self.dataTaskFactory
+            return Future { promise in
+                Task(priority: .userInitiated) {
+                    do {
+                        let result = try await adapter.httpDataTaskAdapt(for: originalRequest)
+                        promise(.success(result))
+                    } catch {
+                        promise(.failure(HTTPURLError.failWhileAdapt(request: originalRequest, originalError: error)))
+                    }
                 }
             }
+            .flatMap { adaptedRequest in
+                factory.anyDataTaskPublisher(for: adaptedRequest, duplicationHandler: duplicationHandling)
+                    .httpResponseOnly()
+            }
+            .eraseToAnyPublisher()
         }
         
-        @HTTPDataTaskActor
-        func demandOutput(using urlRequest: URLRequest) {
-            guard ongoingRequest == nil else { return }
-            var cancellable: AnyCancellable?
-            cancellable = dataTaskFactory
-                .anyDataTaskPublisher(for: urlRequest, duplicationHandling: duplicationHandling)
-                .httpResponseOnly()
-                .sink { [weak self] completion in
-                    defer { cancellable = nil }
-                    guard case .failure(let error) = completion else {
-                        self?.terminateAllSubscribers()
-                        return
-                    }
-                    self?.dequeueSubscriber(with: error)
-                } receiveValue: { [weak self] response in
-                    self?.dequeueSubscriber(with: response.data, response: response.response)
-                    cancellable?.cancel()
-                    cancellable = nil
-                }
-            ongoingRequest = cancellable
-        }
     }
     
-    class HTTPDataTaskSubscription<S: Subscriber>: Subscription, HTTPDataTaskReceiver where S.Failure == HTTPURLError, S.Input == HTTPURLResponseOutput {
+    final class HTTPDataTaskSubscription<S: Subscriber, P: HTTPDataTaskDemandable>: Subscription where S.Input == P.Output, S.Failure == P.Failure {
         
-        var publisher: HTTPDataTaskDemandable?
-        var subscriber: S?
-        var demand: Subscribers.Demand = .none
+        private var publisher: P?
+        private var subscriber: S?
+        private var ongoingDemand: AnyCancellable?
         
-        init(publisher: HTTPDataTaskDemandable, subscriber: S) {
+        init(publisher: P, subscriber: S) {
             self.publisher = publisher
             self.subscriber = subscriber
         }
         
-        func request(_ demand: Subscribers.Demand) {
-            publisher?.demandOutput(from: self)
+        public func request(_ demand: Subscribers.Demand) {
+            guard let subscriber = self.subscriber else { return }
+            demandToPublisher(for: subscriber)
         }
         
-        func cancel() {
+        public func cancel() {
+            subscriber?.receive(completion: .finished)
             publisher = nil
             subscriber = nil
         }
         
-        func acceptResponse(data: Data, response: HTTPURLResponse) {
-            guard let subscriber else { return }
-            _ = subscriber.receive((data, response))
-        }
-        
-        func acceptError(error: HTTPURLError) {
-            guard let subscriber else { return }
-            subscriber.receive(completion: .failure(error))
-        }
-        
-        func acceptTermination() {
-            guard let subscriber else { return }
-            subscriber.receive(completion: .finished)
+        private func demandToPublisher(for subscriber: S) {
+            guard ongoingDemand == nil else { return }
+            self.ongoingDemand = publisher?.demand { [weak self] result in
+                switch result {
+                case .success(let success):
+                    _ = subscriber.receive(success)
+                    subscriber.receive(completion: .finished)
+                case .failure(let failure):
+                    subscriber.receive(completion: .failure(failure))
+                }
+                self?.ongoingDemand = nil
+            }
         }
     }
 }

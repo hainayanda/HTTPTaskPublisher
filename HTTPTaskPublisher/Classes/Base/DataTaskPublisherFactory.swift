@@ -11,7 +11,7 @@ import Combine
 public typealias URLResponseOutput = (data: Data, response: URLResponse)
 
 public protocol DataTaskPublisherFactory {
-    func anyDataTaskPublisher(for request: URLRequest, duplicationHandling: DuplicationHandling) -> Future<URLResponseOutput, URLError>
+    func anyDataTaskPublisher(for request: URLRequest, duplicationHandler: DuplicationHandling) -> Future<URLResponseOutput, URLError>
 }
 
 public enum DuplicationHandling {
@@ -36,8 +36,8 @@ extension URLSession: DataTaskPublisherFactory {
         }
     }
     
-    public func anyDataTaskPublisher(for request: URLRequest, duplicationHandling: DuplicationHandling) -> Future<URLResponseOutput, URLError> {
-        switch duplicationHandling {
+    public func anyDataTaskPublisher(for request: URLRequest, duplicationHandler: DuplicationHandling) -> Future<URLResponseOutput, URLError> {
+        switch duplicationHandler {
         case .useCurrentIfPossible:
             return getPublisher(of: request)
         case .dropIfDuplicated:

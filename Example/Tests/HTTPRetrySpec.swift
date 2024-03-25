@@ -16,13 +16,14 @@ class HTTPRetrySpec: QuickSpec {
     // swiftlint:disable function_body_length
     override class func spec() {
         var sender: MockablePublisher!
-        var publisher: URLSession.HTTPRetry<MockablePublisher>!
+        var publisher: URLSession.HTTPRetry!
         var retrier: MockRetrier!
         context("request is failing") {
             beforeEach {
                 retrier = MockRetrier()
                 sender = MockablePublisher(.failure(.error(TestError.expectedError)))
-                publisher = .init(upstream: sender, retrier: retrier)
+                publisher = .init(retrier: retrier)
+                sender.subscribe(publisher)
             }
             it("should drop the request") {
                 retrier.decision = .drop
@@ -53,7 +54,8 @@ class HTTPRetrySpec: QuickSpec {
             beforeEach {
                 retrier = MockRetrier()
                 sender = MockablePublisher(.success((data: Data(), response: HTTPURLResponse())))
-                publisher = .init(upstream: sender, retrier: retrier)
+                publisher = .init(retrier: retrier)
+                sender.subscribe(publisher)
             }
             it("should success and never drop") {
                 retrier.decision = .drop
@@ -141,7 +143,7 @@ private func expectToBeExpectedError(for result: Result<URLResponseOutput, HTTPU
 private class MockRetrier: HTTPDataTaskRetrier {
     
     var decision: HTTPDataTaskRetryDecision = .drop
-    var called: Bool { calledCount > 1 }
+    var called: Bool { calledCount > 0 }
     var calledCount: Int = 0
     
     func httpDataTaskShouldRetry(for error: HTTPURLError) async throws -> HTTPDataTaskRetryDecision {

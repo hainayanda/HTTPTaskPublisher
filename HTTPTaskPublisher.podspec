@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'HTTPTaskPublisher'
-  s.version          = '2.1.0'
+  s.version          = '3.0.0'
   s.summary          = 'Swift Publisher for HTTP request'
 
 # This description is used to generate tags and improve search results.
@@ -42,5 +42,4 @@ Pod::Spec.new do |s|
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
-  # s.dependency 'CombineAsync', '~> 1.1.3'
 end

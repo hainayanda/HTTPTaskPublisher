@@ -12,15 +12,18 @@ import Nimble
 import Combine
 @testable import HTTPTaskPublisher
 
-class HTTPDataTaskPublisherSpec: QuickSpec {
+class HTTPDataTaskPublisherSpec: AsyncSpec {
     // swiftlint:disable function_body_length
     override class func spec() {
         var factory: DataTaskFactoryMock!
         var publisher: URLSession.HTTPDataTaskPublisher!
         context("failing") {
             beforeEach {
-                factory = DataTaskFactoryMock(result: .failure(.init(.unknown)))
-                publisher = .init(dataTaskFactory: factory, urlRequest: .dummy, adapter: nil, duplicationHandling: .alwaysCreateNew)
+                factory = await DataTaskFactoryMock(result: .failure(.init(.unknown)))
+                publisher = .init(
+                    dataTaskFactory: factory, urlRequest: .dummy,
+                    adapter: nil, duplicationHandler: .alwaysCreateNew
+                )
             }
             it("should sink with error") {
                 let result = try waitForResponse(to: publisher)
@@ -28,7 +31,10 @@ class HTTPDataTaskPublisherSpec: QuickSpec {
             }
             it("should adapt with new request") {
                 let adapter = MockAdapter()
-                publisher = .init(dataTaskFactory: factory, urlRequest: .dummy, adapter: adapter, duplicationHandling: .alwaysCreateNew)
+                publisher = .init(
+                    dataTaskFactory: factory, urlRequest: .dummy,
+                    adapter: adapter, duplicationHandler: .alwaysCreateNew
+                )
                 let newRequest = URLRequest(url: URL(string: "http://www.adapt.com")!)
                 adapter.result = .success(newRequest)
                 
@@ -39,7 +45,10 @@ class HTTPDataTaskPublisherSpec: QuickSpec {
             }
             it("should not with new request") {
                 let adapter = MockAdapter()
-                publisher = .init(dataTaskFactory: factory, urlRequest: .dummy, adapter: adapter, duplicationHandling: .alwaysCreateNew)
+                publisher = .init(
+                    dataTaskFactory: factory, urlRequest: .dummy,
+                    adapter: adapter, duplicationHandler: .alwaysCreateNew
+                )
                 adapter.result = .failure(.expectedError)
                 
                 let result = try waitForResponse(to: publisher)
@@ -50,8 +59,11 @@ class HTTPDataTaskPublisherSpec: QuickSpec {
         }
         context("succeed") {
             beforeEach {
-                factory = DataTaskFactoryMock(result: .success((Data(), HTTPURLResponse())))
-                publisher = .init(dataTaskFactory: factory, urlRequest: .dummy, adapter: nil, duplicationHandling: .alwaysCreateNew)
+                factory = await DataTaskFactoryMock(result: .success((Data(), HTTPURLResponse())))
+                publisher = .init(
+                    dataTaskFactory: factory, urlRequest: .dummy,
+                    adapter: nil, duplicationHandler: .alwaysCreateNew
+                )
             }
             it("should sink with value") {
                 let result = try waitForResponse(to: publisher)
@@ -59,7 +71,10 @@ class HTTPDataTaskPublisherSpec: QuickSpec {
             }
             it("should adapt with new request") {
                 let adapter = MockAdapter()
-                publisher = .init(dataTaskFactory: factory, urlRequest: .dummy, adapter: adapter, duplicationHandling: .alwaysCreateNew)
+                publisher = .init(
+                    dataTaskFactory: factory, urlRequest: .dummy,
+                    adapter: adapter, duplicationHandler: .alwaysCreateNew
+                )
                 let newRequest = URLRequest(url: URL(string: "http://www.adapt.com")!)
                 adapter.result = .success(newRequest)
                 
@@ -70,7 +85,10 @@ class HTTPDataTaskPublisherSpec: QuickSpec {
             }
             it("should not adapt with new request") {
                 let adapter = MockAdapter()
-                publisher = .init(dataTaskFactory: factory, urlRequest: .dummy, adapter: adapter, duplicationHandling: .alwaysCreateNew)
+                publisher = .init(
+                    dataTaskFactory: factory, urlRequest: .dummy,
+                    adapter: adapter, duplicationHandler: .alwaysCreateNew
+                )
                 adapter.result = .failure(.expectedError)
                 
                 let result = try waitForResponse(to: publisher)

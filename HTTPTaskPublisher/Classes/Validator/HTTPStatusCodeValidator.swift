@@ -23,25 +23,25 @@ struct HTTPStatusCodeValidator: HTTPDataTaskValidator {
 
 // MARK: Publisher + HTTPStatusCodeValidator
 
-extension Publisher where Self: HTTPDataTaskDemandable, Output == HTTPURLResponseOutput, Failure == HTTPURLError {
+extension Publisher where Output == HTTPURLResponseOutput, Failure == HTTPURLError {
     
-    public func allowed(statusCodes: [Int]) -> URLSession.HTTPValid<Self> {
+    public func allowed(statusCodes: [Int]) -> URLSession.HTTPValid {
         validate(using: HTTPStatusCodeValidator(allowedStatusCodes: statusCodes))
     }
     
-    public func allowed(statusCode: Int) -> URLSession.HTTPValid<Self> {
+    public func allowed(statusCode: Int) -> URLSession.HTTPValid {
         allowed(statusCodes: [statusCode])
     }
     
-    public func allowed(statusCodes: Int...) -> URLSession.HTTPValid<Self> {
+    public func allowed(statusCodes: Int...) -> URLSession.HTTPValid {
         allowed(statusCodes: statusCodes)
     }
     
-    public func allowed(statusCodes: Range<Int>) -> URLSession.HTTPValid<Self> {
+    public func allowed(statusCodes: Range<Int>) -> URLSession.HTTPValid {
         allowed(statusCodes: Array(statusCodes))
     }
     
-    public func allowed(statusCodes: ClosedRange<Int>) -> URLSession.HTTPValid<Self> {
+    public func allowed(statusCodes: ClosedRange<Int>) -> URLSession.HTTPValid {
         allowed(statusCodes: Array(statusCodes))
     }
 }

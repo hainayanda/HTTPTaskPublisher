@@ -20,18 +20,18 @@ class IntegrationSpec: QuickSpec {
             cancellable = nil
         }
         it("should get successfully") {
-            let url = URL(string: "https://api.publicapis.org/entries?category=Animals")!
+            let url = URL(string: "https://reqres.in/api/users?page=2")!
             var request = URLRequest(url: url)
             request.httpMethod = "GET"
             var httpUrlError: HTTPURLError?
-            var result: Result?
+            var result: MockResult?
             var response: HTTPURLResponse?
             waitUntil(timeout: .seconds(30)) { done in
                 cancellable = URLSession.shared.httpTaskPublisher(for: request)
                     .allowed(statusCode: 200)
                     .validate { _, _ in .valid }
                     .retryDecision { _ in .drop }
-                    .decode(type: Result.self, decoder: JSONDecoder())
+                    .decode(type: MockResult.self, decoder: JSONDecoder())
                     .retry(3)
                     .sink { completion in
                         switch completion {
@@ -52,38 +52,38 @@ class IntegrationSpec: QuickSpec {
                 return
             }
             expect(response.statusCode).to(equal(200))
-            expect(result.entries.count).to(equal(result.count))
+            expect(result.data.count).to(equal(result.perPage))
 
         }
     }
 }
 
-// MARK: - Result
-
-private struct Result: Codable {
-    let count: Int
-    let entries: [Entry]
-}
-
-// MARK: - Entry
-private struct Entry: Codable {
-    let api, auth, category, entryDescription, link: String
-    let cors: Cors
-    let https: Bool
+// MARK: - MockResult
+struct MockResult: Codable {
+    let page, perPage, total, totalPages: Int
+    let data: [User]
+    let support: Support
 
     enum CodingKeys: String, CodingKey {
-        case api = "API"
-        case auth = "Auth"
-        case category = "Category"
-        case cors = "Cors"
-        case entryDescription = "Description"
-        case https = "HTTPS"
-        case link = "Link"
+        case page, total, data, support
+        case perPage = "per_page"
+        case totalPages = "total_pages"
     }
 }
 
-private enum Cors: String, Codable {
-    case yes
-    case no
-    case unknown
+// MARK: - Datum
+struct User: Codable {
+    let id: Int
+    let email, firstName, lastName, avatar: String
+
+    enum CodingKeys: String, CodingKey {
+        case id, email, avatar
+        case firstName = "first_name"
+        case lastName = "last_name"
+    }
+}
+
+// MARK: - Support
+struct Support: Codable {
+    let url, text: String
 }

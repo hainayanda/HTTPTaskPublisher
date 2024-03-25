@@ -26,9 +26,10 @@ struct HTTPClosureValidator: HTTPDataTaskValidator {
 
 // MARK: Publisher + HTTPClosureValidator
 
-extension Publisher where Self: HTTPDataTaskDemandable, Output == HTTPURLResponseOutput, Failure == HTTPURLError {
+extension Publisher where Output == HTTPURLResponseOutput, Failure == HTTPURLError {
     
-    public func validate(_ validator: @escaping (Data, HTTPURLResponse) -> HTTPDataTaskValidation) -> URLSession.HTTPValid<Self> {
+    public func validate(
+        _ validator: @escaping (Data, HTTPURLResponse) -> HTTPDataTaskValidation) -> URLSession.HTTPValid {
         validate(using: HTTPClosureValidator(validator: validator))
     }
 }

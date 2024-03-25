@@ -10,101 +10,90 @@ import Combine
 
 extension URLSession {
     
-    public class HTTPRetry<Upstream: Publisher & HTTPDataTaskDemandable>: HTTPDataTaskSubscribable, Publisher, Subscriber
-    where Upstream.Output == HTTPURLResponseOutput, Upstream.Failure == HTTPURLError {
-        
-        public typealias Input = HTTPURLResponseOutput
-        public typealias Output = HTTPURLResponseOutput
-        public typealias Failure = HTTPURLError
+    public final class HTTPRetry: HTTPDataTaskDemandableSubscriber {
         
         let retrier: HTTPDataTaskRetrier
         let retryDelay: TimeInterval
+        let resultSubject: PassthroughSubject<Output, Failure> = .init()
         
-        @HTTPDataTaskActor var subscription: Subscription?
-        @HTTPDataTaskActor var subscribers: [CombineIdentifier: HTTPDataTaskReceiver] = [:]
-        @HTTPDataTaskActor var isWaitingUpstream: Bool = false
+        var subscription: Subscription?
         
-        init(upstream: Upstream, retrier: HTTPDataTaskRetrier, retryDelay: TimeInterval = 0.1) {
+        init(retrier: HTTPDataTaskRetrier, retryDelay: TimeInterval = 0.1) {
             self.retrier = retrier
             self.retryDelay = retryDelay
-            upstream.subscribe(self)
         }
         
-        // MARK: Publisher
-        
-        public func receive<S>(subscriber: S) where S: Subscriber, Upstream.Failure == S.Failure, HTTPURLResponseOutput == S.Input {
+        public func receive<S>(subscriber: S)
+        where S: Subscriber, HTTPURLError == S.Failure, HTTPURLResponseOutput == S.Input {
             let subscription = HTTPDataTaskSubscription(publisher: self, subscriber: subscriber)
             subscriber.receive(subscription: subscription)
         }
         
-        // MARK: Subscriber
-        
-        public func receive(subscription: Subscription) {
-            Task { @HTTPDataTaskActor in
-                self.subscription = subscription
-                demandToUpstreamIfNeeded()
-            }
+        public func receive(subscription: any Subscription) {
+            self.subscription = subscription
         }
         
-        public func receive(completion: Subscribers.Completion<Failure>) {
-            Task { @HTTPDataTaskActor in
-                isWaitingUpstream = false
-                switch completion {
-                case .finished:
-                    terminateAllSubscribers()
-                case .failure(let failure):
-                    do {
-                        try await tryToRetry(from: failure)
-                    } catch {
-                        dequeueSubscriber(with: HTTPURLError.failWhileRetry(error: error, originalError: failure))
+        public func receive(_ input: HTTPURLResponseOutput) -> Subscribers.Demand {
+            resultSubject.send(input)
+            return .none
+        }
+        
+        public func receive(completion: Subscribers.Completion<HTTPURLError>) {
+            switch completion {
+            case .finished:
+                resultSubject.send(completion: completion)
+                return
+            case .failure(let error):
+                guard let subscription else {
+                    resultSubject.send(completion: .failure(error))
+                    return
+                }
+                let retrier = self.retrier
+                Task(priority: .userInitiated) {
+                    let retryDecision = try await retrier.httpDataTaskShouldRetry(for: error)
+                    switch retryDecision {
+                    case .retry:
+                        try? await Task.sleep(nanoseconds: UInt64(retryDelay * 1_000_000_000))
+                        subscription.request(.max(1))
+                    case .dropWithReason(let reason):
+                        resultSubject.send(
+                            completion: .failure(
+                                HTTPURLError.failToRetry(reason: reason, originalError: error)
+                            )
+                        )
+                    case .drop:
+                        resultSubject.send(completion: .failure(error))
                     }
                 }
             }
         }
         
-        public func receive(_ input: HTTPURLResponseOutput) -> Subscribers.Demand {
-            Task { @HTTPDataTaskActor in
-                isWaitingUpstream = false
-                dequeueSubscriber(with: input.data, response: input.response)
+        func demand(
+            _ resultConsumer: @escaping (Result<HTTPURLResponseOutput, HTTPURLError>) -> Void) -> AnyCancellable {
+                defer {
+                    subscription?.request(.max(1))
+                }
+                return resultSubject.sink { completion in
+                    switch completion {
+                    case .finished:
+                        return
+                    case .failure(let error):
+                        resultConsumer(.failure(error))
+                    }
+                } receiveValue: { response in
+                    resultConsumer(.success(response))
+                }
             }
-            return .none
-        }
-        
-        @HTTPDataTaskActor
-        public func demandOutput(from receiver: HTTPDataTaskReceiver) {
-            subscribers[receiver.combineIdentifier] = receiver
-            demandToUpstreamIfNeeded()
-        }
-        
-        @HTTPDataTaskActor
-        func tryToRetry(from failure: HTTPURLError) async throws {
-            let retryDecision = try await retrier.httpDataTaskShouldRetry(for: failure)
-            switch retryDecision {
-            case .retry:
-                try? await Task.sleep(nanoseconds: UInt64(retryDelay * 1_000_000_000))
-                subscription?.request(.max(1))
-            case .dropWithReason(let reason):
-                dequeueSubscriber(with: HTTPURLError.failToRetry(reason: reason, originalError: failure))
-            case .drop:
-                dequeueSubscriber(with: failure)
-            }
-        }
-        
-        @HTTPDataTaskActor
-        func demandToUpstreamIfNeeded() {
-            guard !isWaitingUpstream, let subscription else {
-                return
-            }
-            subscription.request(.max(1))
-        }
     }
 }
 
 // MARK: Publisher + Extensions
 
-extension Publisher where Self: HTTPDataTaskDemandable, Output == HTTPURLResponseOutput, Failure == HTTPURLError {
+extension Publisher where Output == HTTPURLResponseOutput, Failure == HTTPURLError {
     
-    public func retrying(using retrier: HTTPDataTaskRetrier, retryDelay: TimeInterval = 0.1) -> URLSession.HTTPRetry<Self> {
-        URLSession.HTTPRetry(upstream: self, retrier: retrier, retryDelay: retryDelay)
+    public func retrying(using retrier: HTTPDataTaskRetrier, retryDelay: TimeInterval = 0.1) -> URLSession.HTTPRetry {
+        let retrier = URLSession.HTTPRetry(retrier: retrier, retryDelay: retryDelay)
+        self.subscribe(retrier)
+        return retrier
     }
 }

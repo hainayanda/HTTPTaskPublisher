@@ -10,29 +10,24 @@ import Foundation
 import Combine
 @testable import HTTPTaskPublisher
 
-class MockablePublisher: Publisher, HTTPDataTaskDemandable {
+final class MockablePublisher: HTTPDataTaskDemandable {
     
-    typealias Output = HTTPURLResponseOutput
-    typealias Failure = HTTPURLError
-    
-    let result: Result<HTTPURLResponseOutput, HTTPURLError>
+    @Published var result: Result<HTTPURLResponseOutput, HTTPURLError>
     
     init(_ result: Result<HTTPURLResponseOutput, HTTPURLError>) {
         self.result = result
     }
     
-    func receive<S>(subscriber: S) where S: Subscriber, HTTPTaskPublisher.HTTPURLError == S.Failure, HTTPURLResponseOutput == S.Input {
+    func receive<S>(subscriber: S)
+    where S: Subscriber, HTTPTaskPublisher.HTTPURLError == S.Failure, HTTPURLResponseOutput == S.Input {
         let subscription = URLSession.HTTPDataTaskSubscription(publisher: self, subscriber: subscriber)
         subscriber.receive(subscription: subscription)
     }
     
-    func demandOutput(from receiver: HTTPTaskPublisher.HTTPDataTaskReceiver) {
-        switch result {
-        case .success(let output):
-            receiver.acceptResponse(data: output.data, response: output.response)
-        case .failure(let error):
-            receiver.acceptError(error: error)
-        }
+    func demand(_ resultConsumer: @escaping (Result<HTTPURLResponseOutput, HTTPURLError>) -> Void) -> AnyCancellable {
+        $result
+            .delay(for: .microseconds(1), scheduler: RunLoop.main)
+            .sink(receiveValue: resultConsumer)
     }
     
 }
@@ -54,11 +49,13 @@ class DataTaskFactoryMock: DataTaskPublisherFactory {
         self.result = result
     }
     
-    func anyDataTaskPublisher(for request: URLRequest, duplicationHandling: DuplicationHandling) -> Future<URLResponseOutput, URLError> {
-        self.request = request
-        let result = self.result
-        return Future { promise in
-            promise(result)
+    func anyDataTaskPublisher(
+        for request: URLRequest,
+        duplicationHandler duplicationHandling: DuplicationHandling) -> Future<URLResponseOutput, URLError> {
+            self.request = request
+            let result = self.result
+            return Future { promise in
+                promise(result)
+            }
         }
-    }
 }

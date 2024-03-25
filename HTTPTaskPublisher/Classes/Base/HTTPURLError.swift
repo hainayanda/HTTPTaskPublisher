@@ -30,7 +30,7 @@ extension HTTPURLError: CustomStringConvertible {
             return "HTTPTaskPublisher fail while adapting request with statusCode: \(statusCode ?? -1), url: \(request.url?.absoluteString ?? "none")\nOriginal Error: \(originalError)"
         case .failDecode(_, let response, let decodeError):
             return "HTTPTaskPublisher fail decoding data from response: \(response.url?.absoluteString ?? "none")\nOriginal Error: \(decodeError)"
-        case .failValidation(let reason, let data, let response):
+        case .failValidation(let reason, _, let response):
             return "HTTPTaskPublisher fail validating response with statusCode: \(statusCode ?? -1), url: \(response.url?.absoluteString ?? "none"), reason: \(reason)"
         case .expectHTTPResponse(_, let response):
             return "HTTPTaskPublisher fail because response is not http response: \(response.url?.absoluteString ?? "none")"

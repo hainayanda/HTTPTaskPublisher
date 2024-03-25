@@ -18,7 +18,8 @@ final class MockablePublisher: HTTPDataTaskDemandable {
         self.result = result
     }
     
-    func receive<S>(subscriber: S) where S: Subscriber, HTTPTaskPublisher.HTTPURLError == S.Failure, HTTPURLResponseOutput == S.Input {
+    func receive<S>(subscriber: S)
+    where S: Subscriber, HTTPTaskPublisher.HTTPURLError == S.Failure, HTTPURLResponseOutput == S.Input {
         let subscription = URLSession.HTTPDataTaskSubscription(publisher: self, subscriber: subscriber)
         subscriber.receive(subscription: subscription)
     }
@@ -48,11 +49,13 @@ class DataTaskFactoryMock: DataTaskPublisherFactory {
         self.result = result
     }
     
-    func anyDataTaskPublisher(for request: URLRequest, duplicationHandler duplicationHandling: DuplicationHandling) -> Future<URLResponseOutput, URLError> {
-        self.request = request
-        let result = self.result
-        return Future { promise in
-            promise(result)
+    func anyDataTaskPublisher(
+        for request: URLRequest,
+        duplicationHandler duplicationHandling: DuplicationHandling) -> Future<URLResponseOutput, URLError> {
+            self.request = request
+            let result = self.result
+            return Future { promise in
+                promise(result)
+            }
         }
-    }
 }

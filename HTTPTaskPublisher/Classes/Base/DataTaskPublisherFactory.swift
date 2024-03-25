@@ -16,7 +16,10 @@ public typealias URLResponseOutput = (data: Data, response: URLResponse)
 
 @HTTPDataTaskActor
 public protocol DataTaskPublisherFactory {
-    func anyDataTaskPublisher(for request: URLRequest, duplicationHandler: DuplicationHandling) -> Future<URLResponseOutput, URLError>
+    func anyDataTaskPublisher(
+        for request: URLRequest,
+        duplicationHandler: DuplicationHandling
+    ) -> Future<URLResponseOutput, URLError>
 }
 
 public enum DuplicationHandling {
@@ -41,19 +44,21 @@ extension URLSession: DataTaskPublisherFactory {
         }
     }
     
-    public func anyDataTaskPublisher(for request: URLRequest, duplicationHandler: DuplicationHandling) -> Future<URLResponseOutput, URLError> {
-        switch duplicationHandler {
-        case .useCurrentIfPossible:
-            return getPublisher(of: request)
-        case .dropIfDuplicated:
-            guard ongoingRequest[request]?.future == nil else {
-                return Future { $0(.failure(URLError(.cancelled))) }
+    public func anyDataTaskPublisher(
+        for request: URLRequest,
+        duplicationHandler: DuplicationHandling) -> Future<URLResponseOutput, URLError> {
+            switch duplicationHandler {
+            case .useCurrentIfPossible:
+                return getPublisher(of: request)
+            case .dropIfDuplicated:
+                guard ongoingRequest[request]?.future == nil else {
+                    return Future { $0(.failure(URLError(.cancelled))) }
+                }
+            case .alwaysCreateNew:
+                break
             }
-        case .alwaysCreateNew:
-            break
+            return createNewPublisher(for: request)
         }
-        return createNewPublisher(for: request)
-    }
     
     private func getPublisher(of request: URLRequest) -> Future<URLResponseOutput, URLError> {
         guard let currentPublisher = ongoingRequest[request]?.future else {

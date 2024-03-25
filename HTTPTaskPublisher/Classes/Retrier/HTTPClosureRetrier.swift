@@ -25,7 +25,9 @@ struct HTTPClosureRetrier: HTTPDataTaskRetrier {
 
 extension Publisher where Output == HTTPURLResponseOutput, Failure == HTTPURLError {
     
-    public func retryDecision(for retrier: @Sendable @escaping (HTTPURLError) async throws -> HTTPDataTaskRetryDecision) -> URLSession.HTTPRetry {
+    public func retryDecision(
+        for retrier: @Sendable @escaping (HTTPURLError) async throws -> HTTPDataTaskRetryDecision
+    ) -> URLSession.HTTPRetry {
         retrying(using: HTTPClosureRetrier(retrier))
     }
     

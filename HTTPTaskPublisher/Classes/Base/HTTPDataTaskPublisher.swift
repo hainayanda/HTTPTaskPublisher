@@ -12,7 +12,12 @@ protocol HTTPDataTaskDemandable: AnyObject, Publisher<HTTPURLResponseOutput, HTT
     func demand(_ resultConsumer: @escaping (Result<Output, HTTPURLError>) -> Void) -> AnyCancellable
 }
 
+protocol HTTPDataTaskDemandableSubscriber: HTTPDataTaskDemandable, Subscriber<HTTPURLResponseOutput, HTTPURLError> {
+    func demand(_ resultConsumer: @escaping (Result<Output, HTTPURLError>) -> Void) -> AnyCancellable
+}
+
 extension URLSession {
+    
     public final class HTTPDataTaskPublisher: HTTPDataTaskDemandable {
         
         private let dataTaskFactory: DataTaskPublisherFactory
@@ -20,36 +25,42 @@ extension URLSession {
         private let adapter: HTTPDataTaskAdapter?
         private let urlRequest: URLRequest
         
-        init(dataTaskFactory: DataTaskPublisherFactory, urlRequest: URLRequest, adapter: HTTPDataTaskAdapter?, duplicationHandler: DuplicationHandling) {
-            self.dataTaskFactory = dataTaskFactory
-            self.urlRequest = urlRequest
-            self.duplicationHandler = duplicationHandler
-            self.adapter = adapter
-        }
+        init(
+            dataTaskFactory: DataTaskPublisherFactory,
+            urlRequest: URLRequest,
+            adapter: HTTPDataTaskAdapter?,
+            duplicationHandler: DuplicationHandling) {
+                self.dataTaskFactory = dataTaskFactory
+                self.urlRequest = urlRequest
+                self.duplicationHandler = duplicationHandler
+                self.adapter = adapter
+            }
         
-        public func receive<S>(subscriber: S) where S: Subscriber, HTTPURLError == S.Failure, HTTPURLResponseOutput == S.Input {
+        public func receive<S>(subscriber: S)
+        where S: Subscriber, HTTPURLError == S.Failure, HTTPURLResponseOutput == S.Input {
             let subscription = HTTPDataTaskSubscription(publisher: self, subscriber: subscriber)
             subscriber.receive(subscription: subscription)
         }
         
-        func demand(_ resultConsumer: @escaping (Result<HTTPURLResponseOutput, HTTPURLError>) -> Void) -> AnyCancellable {
-            Future<AnyPublisher<HTTPURLResponseOutput, HTTPURLError>, HTTPURLError> { promise in
-                Task(priority: .userInitiated) {
-                    await promise(.success(self.requestPublisher()))
+        func demand(
+            _ resultConsumer: @escaping (Result<HTTPURLResponseOutput, HTTPURLError>) -> Void) -> AnyCancellable {
+                Future<AnyPublisher<HTTPURLResponseOutput, HTTPURLError>, HTTPURLError> { promise in
+                    Task(priority: .userInitiated) {
+                        await promise(.success(self.requestPublisher()))
+                    }
+                }
+                .flatMap { $0 }
+                .sink { completion in
+                    switch completion {
+                    case .finished:
+                        return
+                    case .failure(let error):
+                        resultConsumer(.failure(error))
+                    }
+                } receiveValue: { response in
+                    resultConsumer(.success(response))
                 }
             }
-            .flatMap { $0 }
-            .sink { completion in
-                switch completion {
-                case .finished:
-                    return
-                case .failure(let error):
-                    resultConsumer(.failure(error))
-                }
-            } receiveValue: { response in
-                resultConsumer(.success(response))
-            }
-        }
         
         @HTTPDataTaskActor
         private func requestPublisher() -> AnyPublisher<HTTPURLResponseOutput, HTTPURLError> {
@@ -81,7 +92,8 @@ extension URLSession {
         
     }
     
-    actor HTTPDataTaskSubscription<S: Subscriber, P: HTTPDataTaskDemandable>: Subscription where S.Input == P.Output, S.Failure == P.Failure {
+    actor HTTPDataTaskSubscription<S: Subscriber, P: HTTPDataTaskDemandable>: Subscription
+    where S.Input == P.Output, S.Failure == P.Failure {
         
         private var publisher: P?
         private var subscriber: S?
@@ -128,6 +140,7 @@ extension URLSession {
         }
         
         private func clearDemand() {
+            ongoingDemand?.cancel()
             ongoingDemand = nil
         }
     }

@@ -10,9 +10,7 @@ import Combine
 
 extension URLSession {
     
-    public final class HTTPValid: HTTPDataTaskDemandable, Publisher, Subscriber {
-        
-        public typealias Input = HTTPURLResponseOutput
+    public final class HTTPValid: HTTPDataTaskDemandableSubscriber {
         
         let validator: HTTPDataTaskValidator
         let resultSubject: PassthroughSubject<Output, Failure> = .init()
@@ -23,7 +21,8 @@ extension URLSession {
             self.validator = validator
         }
         
-        public func receive<S>(subscriber: S) where S: Subscriber, HTTPURLError == S.Failure, HTTPURLResponseOutput == S.Input {
+        public func receive<S>(subscriber: S)
+        where S: Subscriber, HTTPURLError == S.Failure, HTTPURLResponseOutput == S.Input {
             let subscription = HTTPDataTaskSubscription(publisher: self, subscriber: subscriber)
             subscriber.receive(subscription: subscription)
         }
@@ -37,7 +36,15 @@ extension URLSession {
             case .valid:
                 resultSubject.send(input)
             case .invalid(let reason):
-                resultSubject.send(completion: .failure( HTTPURLError.failValidation(reason: reason, data: input.data, response: input.response)))
+                resultSubject.send(
+                    completion: .failure(
+                        HTTPURLError.failValidation(
+                            reason: reason,
+                            data: input.data,
+                            response: input.response
+                        )
+                    )
+                )
             }
             return .none
         }
@@ -46,21 +53,22 @@ extension URLSession {
             resultSubject.send(completion: completion)
         }
         
-        func demand(_ resultConsumer: @escaping (Result<HTTPURLResponseOutput, HTTPURLError>) -> Void) -> AnyCancellable {
-            defer {
-                subscription?.request(.max(1))
-            }
-            return resultSubject.sink { completion in
-                switch completion {
-                case .finished:
-                    return
-                case .failure(let error):
-                    resultConsumer(.failure(error))
+        func demand(
+            _ resultConsumer: @escaping (Result<HTTPURLResponseOutput, HTTPURLError>) -> Void) -> AnyCancellable {
+                defer {
+                    subscription?.request(.max(1))
                 }
-            } receiveValue: { response in
-                resultConsumer(.success(response))
+                return resultSubject.sink { completion in
+                    switch completion {
+                    case .finished:
+                        return
+                    case .failure(let error):
+                        resultConsumer(.failure(error))
+                    }
+                } receiveValue: { response in
+                    resultConsumer(.success(response))
+                }
             }
-        }
     }
 }
 

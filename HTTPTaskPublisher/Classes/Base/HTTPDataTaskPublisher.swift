@@ -32,20 +32,26 @@ extension URLSession {
             subscriber.receive(subscription: subscription)
         }
         
-        public func demand(_ resultConsumer: @escaping (Result<HTTPURLResponseOutput, HTTPURLError>) -> Void) -> AnyCancellable {
-            requestPublisher()
-                .sink { completion in
-                    switch completion {
-                    case .finished:
-                        return
-                    case .failure(let error):
-                        resultConsumer(.failure(error))
-                    }
-                } receiveValue: { response in
-                    resultConsumer(.success(response))
+        func demand(_ resultConsumer: @escaping (Result<HTTPURLResponseOutput, HTTPURLError>) -> Void) -> AnyCancellable {
+            Future<AnyPublisher<HTTPURLResponseOutput, HTTPURLError>, HTTPURLError> { promise in
+                Task(priority: .userInitiated) {
+                    await promise(.success(self.requestPublisher()))
                 }
+            }
+            .flatMap { $0 }
+            .sink { completion in
+                switch completion {
+                case .finished:
+                    return
+                case .failure(let error):
+                    resultConsumer(.failure(error))
+                }
+            } receiveValue: { response in
+                resultConsumer(.success(response))
+            }
         }
         
+        @HTTPDataTaskActor
         private func requestPublisher() -> AnyPublisher<HTTPURLResponseOutput, HTTPURLError> {
             let originalRequest = self.urlRequest
             guard let adapter else {
@@ -75,7 +81,7 @@ extension URLSession {
         
     }
     
-    final class HTTPDataTaskSubscription<S: Subscriber, P: HTTPDataTaskDemandable>: Subscription where S.Input == P.Output, S.Failure == P.Failure {
+    actor HTTPDataTaskSubscription<S: Subscriber, P: HTTPDataTaskDemandable>: Subscription where S.Input == P.Output, S.Failure == P.Failure {
         
         private var publisher: P?
         private var subscriber: S?
@@ -86,19 +92,20 @@ extension URLSession {
             self.subscriber = subscriber
         }
         
-        public func request(_ demand: Subscribers.Demand) {
-            guard let subscriber = self.subscriber else { return }
-            demandToPublisher(for: subscriber)
+        nonisolated public func request(_ demand: Subscribers.Demand) {
+            Task(priority: .userInitiated) {
+                await demandToPublisher()
+            }
         }
         
-        public func cancel() {
-            subscriber?.receive(completion: .finished)
-            publisher = nil
-            subscriber = nil
+        nonisolated public func cancel() {
+            Task(priority: .userInitiated) {
+                await cancelling()
+            }
         }
         
-        private func demandToPublisher(for subscriber: S) {
-            guard ongoingDemand == nil else { return }
+        private func demandToPublisher() {
+            guard ongoingDemand == nil, let subscriber = self.subscriber else { return }
             self.ongoingDemand = publisher?.demand { [weak self] result in
                 switch result {
                 case .success(let success):
@@ -107,8 +114,21 @@ extension URLSession {
                 case .failure(let failure):
                     subscriber.receive(completion: .failure(failure))
                 }
-                self?.ongoingDemand = nil
+                guard let self else { return }
+                Task {
+                    await self.clearDemand()
+                }
             }
+        }
+        
+        private func cancelling() {
+            subscriber?.receive(completion: .finished)
+            publisher = nil
+            subscriber = nil
+        }
+        
+        private func clearDemand() {
+            ongoingDemand = nil
         }
     }
 }

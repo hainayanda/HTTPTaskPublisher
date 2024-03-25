@@ -12,14 +12,14 @@ import Nimble
 import Combine
 @testable import HTTPTaskPublisher
 
-class HTTPDataTaskPublisherSpec: QuickSpec {
+class HTTPDataTaskPublisherSpec: AsyncSpec {
     // swiftlint:disable function_body_length
     override class func spec() {
         var factory: DataTaskFactoryMock!
         var publisher: URLSession.HTTPDataTaskPublisher!
         context("failing") {
             beforeEach {
-                factory = DataTaskFactoryMock(result: .failure(.init(.unknown)))
+                factory = await DataTaskFactoryMock(result: .failure(.init(.unknown)))
                 publisher = .init(dataTaskFactory: factory, urlRequest: .dummy, adapter: nil, duplicationHandler: .alwaysCreateNew)
             }
             it("should sink with error") {
@@ -50,7 +50,7 @@ class HTTPDataTaskPublisherSpec: QuickSpec {
         }
         context("succeed") {
             beforeEach {
-                factory = DataTaskFactoryMock(result: .success((Data(), HTTPURLResponse())))
+                factory = await DataTaskFactoryMock(result: .success((Data(), HTTPURLResponse())))
                 publisher = .init(dataTaskFactory: factory, urlRequest: .dummy, adapter: nil, duplicationHandler: .alwaysCreateNew)
             }
             it("should sink with value") {

@@ -8,8 +8,13 @@
 import Foundation
 import Combine
 
+@globalActor public actor HTTPDataTaskActor {
+    public static let shared = HTTPDataTaskActor()
+}
+
 public typealias URLResponseOutput = (data: Data, response: URLResponse)
 
+@HTTPDataTaskActor
 public protocol DataTaskPublisherFactory {
     func anyDataTaskPublisher(for request: URLRequest, duplicationHandler: DuplicationHandling) -> Future<URLResponseOutput, URLError>
 }

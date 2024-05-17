@@ -24,11 +24,22 @@ final class MockablePublisher: HTTPDataTaskDemandable {
         subscriber.receive(subscription: subscription)
     }
     
-    func demand(_ resultConsumer: @escaping (Result<HTTPURLResponseOutput, HTTPURLError>) -> Void) -> AnyCancellable {
-        $result
-            .delay(for: .microseconds(1), scheduler: RunLoop.main)
-            .sink(receiveValue: resultConsumer)
-    }
+    func demand(
+        _ outputConsumer: @escaping ((data: Data, response: HTTPURLResponse)) -> Void,
+        cleanUp: @escaping (HTTPURLError?) -> Void) -> AnyCancellable {
+            $result
+                .sink { output in
+                    switch output {
+                    case .success(let response):
+                        outputConsumer(response)
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            cleanUp(nil)
+                        }
+                    case .failure(let error):
+                        cleanUp(error)
+                    }
+                }
+        }
     
 }
 

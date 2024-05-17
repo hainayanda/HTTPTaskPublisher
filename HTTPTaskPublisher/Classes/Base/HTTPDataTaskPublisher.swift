@@ -9,17 +9,16 @@ import Foundation
 import Combine
 
 protocol HTTPDataTaskDemandable: AnyObject, Publisher<HTTPURLResponseOutput, HTTPURLError> {
-    func demand(_ resultConsumer: @escaping (Result<Output, HTTPURLError>) -> Void) -> AnyCancellable
+    func demand(_ outputConsumer: @escaping (Output) -> Void, cleanUp: @escaping (HTTPURLError?) -> Void) -> AnyCancellable
 }
 
 protocol HTTPDataTaskDemandableSubscriber: HTTPDataTaskDemandable, Subscriber<HTTPURLResponseOutput, HTTPURLError> {
-    func demand(_ resultConsumer: @escaping (Result<Output, HTTPURLError>) -> Void) -> AnyCancellable
+    func demand(_ outputConsumer: @escaping (Output) -> Void, cleanUp: @escaping (HTTPURLError?) -> Void) -> AnyCancellable
 }
 
 extension URLSession {
     
     public final class HTTPDataTaskPublisher: HTTPDataTaskDemandable {
-        
         private let dataTaskFactory: DataTaskPublisherFactory
         private let duplicationHandler: DuplicationHandling
         private let adapter: HTTPDataTaskAdapter?
@@ -43,7 +42,8 @@ extension URLSession {
         }
         
         func demand(
-            _ resultConsumer: @escaping (Result<HTTPURLResponseOutput, HTTPURLError>) -> Void) -> AnyCancellable {
+            _ outputConsumer: @escaping ((data: Data, response: HTTPURLResponse)) -> Void,
+            cleanUp: @escaping (HTTPURLError?) -> Void) -> AnyCancellable {
                 Future<AnyPublisher<HTTPURLResponseOutput, HTTPURLError>, HTTPURLError> { promise in
                     Task(priority: .userInitiated) {
                         await promise(.success(self.requestPublisher()))
@@ -53,12 +53,12 @@ extension URLSession {
                 .sink { completion in
                     switch completion {
                     case .finished:
-                        return
+                        cleanUp(nil)
                     case .failure(let error):
-                        resultConsumer(.failure(error))
+                        cleanUp(error)
                     }
                 } receiveValue: { response in
-                    resultConsumer(.success(response))
+                    outputConsumer(response)
                 }
             }
         
@@ -118,13 +118,13 @@ extension URLSession {
         
         private func demandToPublisher() {
             guard ongoingDemand == nil, let subscriber = self.subscriber else { return }
-            self.ongoingDemand = publisher?.demand { [weak self] result in
-                switch result {
-                case .success(let success):
-                    _ = subscriber.receive(success)
+            self.ongoingDemand = publisher?.demand { output in
+                _ = subscriber.receive(output)
+            } cleanUp: { [weak self] error in
+                if let error {
+                    subscriber.receive(completion: .failure(error))
+                } else {
                     subscriber.receive(completion: .finished)
-                case .failure(let failure):
-                    subscriber.receive(completion: .failure(failure))
                 }
                 guard let self else { return }
                 Task {

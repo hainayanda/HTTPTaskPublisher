@@ -103,7 +103,8 @@ class HTTPDataTaskPublisherSpec: AsyncSpec {
 
 // MARK: Test
 
-private func sendRequest(using publisher: URLSession.HTTPDataTaskPublisher) throws -> Result<URLResponseOutput, HTTPURLError> {
+private func sendRequest(using publisher: URLSession.HTTPDataTaskPublisher) 
+throws -> Result<URLResponseOutput, HTTPURLError> {
     var result: Result<URLResponseOutput, HTTPURLError>?
     var cancellable: AnyCancellable?
     waitUntil { done in

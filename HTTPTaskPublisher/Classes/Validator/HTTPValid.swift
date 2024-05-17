@@ -54,19 +54,20 @@ extension URLSession {
         }
         
         func demand(
-            _ resultConsumer: @escaping (Result<HTTPURLResponseOutput, HTTPURLError>) -> Void) -> AnyCancellable {
+            _ outputConsumer: @escaping ((data: Data, response: HTTPURLResponse)) -> Void,
+            cleanUp: @escaping (HTTPURLError?) -> Void) -> AnyCancellable {
                 defer {
                     subscription?.request(.max(1))
                 }
                 return resultSubject.sink { completion in
                     switch completion {
                     case .finished:
-                        return
+                        cleanUp(nil)
                     case .failure(let error):
-                        resultConsumer(.failure(error))
+                        cleanUp(error)
                     }
                 } receiveValue: { response in
-                    resultConsumer(.success(response))
+                    outputConsumer(response)
                 }
             }
     }
